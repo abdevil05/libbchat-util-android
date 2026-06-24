@@ -1,6 +1,6 @@
 #include <jni.h>
-#include <session/session_protocol.hpp>
-#include <session/sodium_array.hpp>
+#include <bchat/bchat_protocol.hpp>
+#include <bchat/sodium_array.hpp>
 
 #include "jni_utils.h"
 #include "pro_proof_util.h"
@@ -8,11 +8,11 @@
 
 using namespace jni_utils;
 
-static JavaLocalRef<jobject> serializeDecodedPro(JNIEnv *env, const session::DecodedPro &pro) {
+static JavaLocalRef<jobject> serializeDecodedPro(JNIEnv *env, const bchat::DecodedPro &pro) {
     static BasicJavaClassInfo class_info(
             env,
-            "network/loki/messenger/libsession_util/protocol/DecodedPro",
-            "(ILnetwork/loki/messenger/libsession_util/pro/ProProof;JJ)V"
+            "network/loki/messenger/libbchat_util/protocol/DecodedPro",
+            "(ILnetwork/loki/messenger/libbchat_util/pro/ProProof;JJ)V"
     );
 
     return {env, env->NewObject(class_info.java_class, class_info.constructor,
@@ -23,29 +23,29 @@ static JavaLocalRef<jobject> serializeDecodedPro(JNIEnv *env, const session::Dec
     };
 }
 
-static JavaLocalRef<jobject> serializeEnvelop(JNIEnv *env, const session::Envelope &envelope) {
+static JavaLocalRef<jobject> serializeEnvelop(JNIEnv *env, const bchat::Envelope &envelope) {
     static BasicJavaClassInfo class_info(
             env,
-            "network/loki/messenger/libsession_util/protocol/Envelope",
+            "network/loki/messenger/libbchat_util/protocol/Envelope",
             "(J[BJ[B)V");
 
     return {env, env->NewObject(class_info.java_class,
                                 class_info.constructor,
                                 static_cast<jlong>(envelope.timestamp.count()),
-                                (envelope.flags & SESSION_PROTOCOL_ENVELOPE_FLAGS_SOURCE)
+                                (envelope.flags & BCHAT_PROTOCOL_ENVELOPE_FLAGS_SOURCE)
                                 ? util::bytes_from_span(env, envelope.source).get()
                                 : nullptr,
-                                (envelope.flags & SESSION_PROTOCOL_ENVELOPE_FLAGS_SERVER_TIMESTAMP)
+                                (envelope.flags & BCHAT_PROTOCOL_ENVELOPE_FLAGS_SERVER_TIMESTAMP)
                                 ? static_cast<jlong>(envelope.server_timestamp)
                                 : 0,
                                 util::bytes_from_span(env, envelope.pro_sig).get())};
 }
 
-static JavaLocalRef<jobject> serializeDecodedEnvelope(JNIEnv *env, const session::DecodedEnvelope &envelop) {
+static JavaLocalRef<jobject> serializeDecodedEnvelope(JNIEnv *env, const bchat::DecodedEnvelope &envelop) {
     static BasicJavaClassInfo class_info(
             env,
-            "network/loki/messenger/libsession_util/protocol/DecodedEnvelope",
-            "(Lnetwork/loki/messenger/libsession_util/protocol/Envelope;Lnetwork/loki/messenger/libsession_util/protocol/DecodedPro;[B[B[BJ)V"
+            "network/loki/messenger/libbchat_util/protocol/DecodedEnvelope",
+            "(Lnetwork/loki/messenger/libbchat_util/protocol/Envelope;Lnetwork/loki/messenger/libbchat_util/protocol/DecodedPro;[B[B[BJ)V"
     );
 
     JavaLocalRef sender_ed25519 = util::bytes_from_span(env, envelop.sender_ed25519_pubkey);
@@ -64,7 +64,7 @@ static JavaLocalRef<jobject> serializeDecodedEnvelope(JNIEnv *env, const session
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libsession_1util_protocol_SessionProtocol_encodeFor1o1(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_encodeFor1o1(JNIEnv *env,
                                                                                    jobject thiz,
                                                                                    jbyteArray plaintext,
                                                                                    jbyteArray my_ed25519_priv_key,
@@ -74,7 +74,7 @@ Java_network_loki_messenger_libsession_1util_protocol_SessionProtocol_encodeFor1
     return run_catching_cxx_exception_or_throws<jbyteArray>(env, [=] {
         return util::bytes_from_vector(
                 env,
-                session::encode_for_1o1(
+                bchat::encode_for_1o1(
                         JavaByteArrayRef(env, plaintext).get(),
                         JavaByteArrayRef(env, my_ed25519_priv_key).get(),
                         std::chrono::milliseconds{timestamp_ms},
@@ -88,14 +88,14 @@ Java_network_loki_messenger_libsession_1util_protocol_SessionProtocol_encodeFor1
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libsession_1util_protocol_SessionProtocol_encodeForCommunityInbox(
+Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_encodeForCommunityInbox(
         JNIEnv *env, jobject thiz, jbyteArray plaintext, jbyteArray my_ed25519_priv_key,
         jlong timestamp_ms, jbyteArray recipient_pub_key, jbyteArray community_server_pub_key,
         jbyteArray rotating_key) {
     return run_catching_cxx_exception_or_throws<jbyteArray>(env, [=] {
         return util::bytes_from_vector(
                 env,
-                session::encode_for_community_inbox(
+                bchat::encode_for_community_inbox(
                         JavaByteArrayRef(env, plaintext).get(),
                         JavaByteArrayRef(env, my_ed25519_priv_key).get(),
                         std::chrono::milliseconds{timestamp_ms},
@@ -110,7 +110,7 @@ Java_network_loki_messenger_libsession_1util_protocol_SessionProtocol_encodeForC
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libsession_1util_protocol_SessionProtocol_encodeForGroup(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_encodeForGroup(JNIEnv *env,
                                                                                      jobject thiz,
                                                                                      jbyteArray plaintext,
                                                                                      jbyteArray my_ed25519_priv_key,
@@ -119,14 +119,14 @@ Java_network_loki_messenger_libsession_1util_protocol_SessionProtocol_encodeForG
                                                                                      jbyteArray group_ed25519_private_key,
                                                                                      jbyteArray rotating_key) {
     return run_catching_cxx_exception_or_throws<jbyteArray>(env, [=] {
-        session::cleared_uc32 group_private_key;
+        bchat::cleared_uc32 group_private_key;
 
         auto array = *java_to_cpp_array<32>(env, group_ed25519_private_key);
         std::copy(array.begin(), array.end(), group_private_key.begin());
 
         return util::bytes_from_vector(
                 env,
-                session::encode_for_group(
+                bchat::encode_for_group(
                         JavaByteArrayRef(env, plaintext).get(),
                         JavaByteArrayRef(env, my_ed25519_priv_key).get(),
                         std::chrono::milliseconds{timestamp_ms},
@@ -141,13 +141,13 @@ Java_network_loki_messenger_libsession_1util_protocol_SessionProtocol_encodeForG
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libsession_1util_protocol_SessionProtocol_decodeForCommunity(
+Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_decodeForCommunity(
         JNIEnv *env, jobject thiz, jbyteArray payload, jlong timestamp_ms,
         jbyteArray pro_backend_pub_key) {
     return run_catching_cxx_exception_or_throws<jobject>(env, [=] {
         jni_utils::JavaByteArrayRef payload_ref(env, payload);
 
-        auto decoded = session::decode_for_community(
+        auto decoded = bchat::decode_for_community(
                 payload_ref.get(),
                 std::chrono::sys_time<std::chrono::milliseconds>{
                         std::chrono::milliseconds{timestamp_ms}},
@@ -156,8 +156,8 @@ Java_network_loki_messenger_libsession_1util_protocol_SessionProtocol_decodeForC
 
         static BasicJavaClassInfo class_info(
                 env,
-                "network/loki/messenger/libsession_util/protocol/DecodedCommunityMessage",
-                "(Lnetwork/loki/messenger/libsession_util/protocol/DecodedPro;[B)V"
+                "network/loki/messenger/libbchat_util/protocol/DecodedCommunityMessage",
+                "(Lnetwork/loki/messenger/libbchat_util/protocol/DecodedPro;[B)V"
         );
 
         return env->NewObject(
@@ -171,7 +171,7 @@ Java_network_loki_messenger_libsession_1util_protocol_SessionProtocol_decodeForC
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libsession_1util_protocol_SessionProtocol_encodeForCommunity(
+Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_encodeForCommunity(
         JNIEnv *env,
         jobject thiz,
         jbyteArray plaintext,
@@ -179,7 +179,7 @@ Java_network_loki_messenger_libsession_1util_protocol_SessionProtocol_encodeForC
     return run_catching_cxx_exception_or_throws<jbyteArray>(env, [=] {
         return util::bytes_from_vector(
                 env,
-                session::encode_for_community(
+                bchat::encode_for_community(
                         JavaByteArrayRef(env, plaintext).get(),
                         rotating_key ? std::optional(JavaByteArrayRef(env, rotating_key).get())
                                      : std::nullopt
@@ -190,7 +190,7 @@ Java_network_loki_messenger_libsession_1util_protocol_SessionProtocol_encodeForC
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libsession_1util_protocol_SessionProtocol_decodeFor1o1(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_decodeFor1o1(JNIEnv *env,
                                                                                    jobject thiz,
                                                                                    jbyteArray key,
                                                                                    jbyteArray payload,
@@ -200,11 +200,11 @@ Java_network_loki_messenger_libsession_1util_protocol_SessionProtocol_decodeFor1
 
         std::array<std::span<const uint8_t>, 1> keys = {key_ref.get()};
 
-        session::DecodeEnvelopeKey decode_key{
+        bchat::DecodeEnvelopeKey decode_key{
                 .decrypt_keys = std::span(keys.data(), keys.size()),
         };
 
-        return serializeDecodedEnvelope(env, session::decode_envelope(
+        return serializeDecodedEnvelope(env, bchat::decode_envelope(
                 decode_key,
                 JavaByteArrayRef(env, payload).get(),
                 *java_to_cpp_array<32>(env, pro_backend_pub_key)
@@ -215,7 +215,7 @@ Java_network_loki_messenger_libsession_1util_protocol_SessionProtocol_decodeFor1
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libsession_1util_protocol_SessionProtocol_decodeForGroup(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_decodeForGroup(JNIEnv *env,
                                                                                      jobject thiz,
                                                                                      jbyteArray payload,
                                                                                      jbyteArray my_ed25519_priv_key,
@@ -233,12 +233,12 @@ Java_network_loki_messenger_libsession_1util_protocol_SessionProtocol_decodeForG
 
         JavaByteArrayRef group_pub_key_ref(env, group_ed25519_public_key);
 
-        session::DecodeEnvelopeKey decode_key{
+        bchat::DecodeEnvelopeKey decode_key{
                 .group_ed25519_pubkey = std::make_optional(group_pub_key_ref.get()),
                 .decrypt_keys = std::span(private_keys_spans.data(), private_keys_spans.size()),
         };
 
-        return serializeDecodedEnvelope(env, session::decode_envelope(
+        return serializeDecodedEnvelope(env, bchat::decode_envelope(
                 decode_key,
                 JavaByteArrayRef(env, payload).get(),
                 *java_to_cpp_array<32>(env, pro_backend_pub_key)

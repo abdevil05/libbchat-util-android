@@ -1,6 +1,6 @@
-### libsession-util Android bridging code
+### libbchat-util Android bridging code
 
-This repository contains the bridging code allowing the Java/Kotlin client to access to the [libsession-util](https://github.com/session-foundation/libsession-util/) library.
+This repository contains the bridging code allowing the Java/Kotlin client to access to the [libbchat-util](https://github.com/bchat-foundation/libbchat-util/) library.
 
 #### Quick start
 
@@ -8,9 +8,9 @@ To start using this library, add this into your top level `build.gradle`'s repos
 
 ```gradle
 maven {
-    url uri("https://oxen.rocks/session-foundation/libsession-util-android/maven")
+    url uri("https://oxen.rocks/bchat-foundation/libbchat-util-android/maven")
     content {
-        includeGroup('org.sessionfoundation')
+        includeGroup('org.bchatfoundation')
     }
 }
 ```
@@ -18,10 +18,10 @@ maven {
 Then in your app's `build.gradle', you can add this as dependency:
 
 ```gradle
-implementation 'org.sessionfoundation:libsession-util-android:LATEST_VERSION_NUMBER'
+implementation 'org.bchatfoundation:libbchat-util-android:LATEST_VERSION_NUMBER'
 ```
 
-All tags pushed to this repository will be built and you can find out the latest by visiting https://github.com/session-foundation/libsession-util-android/tags
+All tags pushed to this repository will be built and you can find out the latest by visiting https://github.com/bchat-foundation/libbchat-util-android/tags
 
 #### Versioning
 
@@ -30,7 +30,7 @@ This library's versioning rules are:
 2. Otherwise, the version name will look like "lastGitTag-numberOfChangesSinceLastTag-shortCommitHash", for example "1.0.0-5-abcd12345". "-dirty" will be appended if the git workspace contains uncommitted changes.
 
 Normally you don't have to worry about versioning as it's fully automatic and deterministic. If
-changes warrant a new release, then Session devs should push a tag,
+changes warrant a new release, then BChat devs should push a tag,
 and we'll have a formal release version built.
 
 #### Development & deployment

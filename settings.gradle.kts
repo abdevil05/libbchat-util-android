@@ -20,5 +20,5 @@ dependencyResolutionManagement {
 }
 
 include(":library")
-project(":library").name = "libsession-util-android"
+project(":library").name = "libbchat-util-android"
  

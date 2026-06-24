@@ -1,6 +1,6 @@
 #include <jni.h>
 
-#include <session/session_encrypt.hpp>
+#include <bchat/bchat_encrypt.hpp>
 
 #include "jni_utils.h"
 #include "util.h"
@@ -11,7 +11,7 @@ using jni_utils::JavaByteArrayRef;
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libsession_1util_SessionEncrypt_decryptForBlindedRecipient(
+Java_network_loki_messenger_libbchat_1util_BChatEncrypt_decryptForBlindedRecipient(
         JNIEnv *env,
         jobject _thiz,
         jbyteArray ciphertext,
@@ -20,7 +20,7 @@ Java_network_loki_messenger_libsession_1util_SessionEncrypt_decryptForBlindedRec
         jbyteArray sender_blinded_id,
         jbyteArray recipient_blind_id) {
     return jni_utils::run_catching_cxx_exception_or_throws<jobject>(env, [=] {
-        auto [plain_text, session_id] = session::decrypt_from_blinded_recipient(
+        auto [plain_text, bchat_id] = bchat::decrypt_from_blinded_recipient(
                 JavaByteArrayRef(env, my_ed25519_privte_key).get(),
                 JavaByteArrayRef(env, open_group_public_key).get(),
                 JavaByteArrayRef(env, sender_blinded_id).get(),
@@ -30,39 +30,39 @@ Java_network_loki_messenger_libsession_1util_SessionEncrypt_decryptForBlindedRec
 
         return jni_utils::new_kotlin_pair(
                 env,
-                jni_utils::jstring_from_optional(env, session_id).get(),
-                jni_utils::session_bytes_from_range(env, plain_text).get()
+                jni_utils::jstring_from_optional(env, bchat_id).get(),
+                jni_utils::bchat_bytes_from_range(env, plain_text).get()
         );
     });
 }
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libsession_1util_SessionEncrypt_encryptForRecipient(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_BChatEncrypt_encryptForRecipient(JNIEnv *env,
                                                                                 jobject thiz,
                                                                                 jbyteArray ed25519_private_key,
                                                                                 jbyteArray recipient_x25519_public_key,
                                                                                 jbyteArray message) {
     return jni_utils::run_catching_cxx_exception_or_throws<jobject>(env, [=] {
-        auto data = session::encrypt_for_recipient(
+        auto data = bchat::encrypt_for_recipient(
                 JavaByteArrayRef(env, ed25519_private_key).get(),
                 JavaByteArrayRef(env, recipient_x25519_public_key).get(),
                 JavaByteArrayRef(env, message).get()
         );
 
-        return jni_utils::session_bytes_from_range(env, data).release();
+        return jni_utils::bchat_bytes_from_range(env, data).release();
     });
 }
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libsession_1util_SessionEncrypt_decryptIncoming(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_BChatEncrypt_decryptIncoming(JNIEnv *env,
                                                                             jobject thiz,
                                                                             jbyteArray x25519_pub_key,
                                                                             jbyteArray x25519_priv_key,
                                                                             jbyteArray ciphertext) {
     return jni_utils::run_catching_cxx_exception_or_throws<jobject>(env, [=] {
-        auto [plain_text, session_id] = session::decrypt_incoming_session_id(
+        auto [plain_text, bchat_id] = bchat::decrypt_incoming_bchat_id(
                 JavaByteArrayRef(env, x25519_pub_key).get(),
                 JavaByteArrayRef(env, x25519_priv_key).get(),
                 JavaByteArrayRef(env, ciphertext).get()
@@ -70,57 +70,57 @@ Java_network_loki_messenger_libsession_1util_SessionEncrypt_decryptIncoming(JNIE
 
         return jni_utils::new_kotlin_pair(
                 env,
-                jni_utils::jstring_from_optional(env, session_id).get(),
-                jni_utils::session_bytes_from_range(env, plain_text).get()
+                jni_utils::jstring_from_optional(env, bchat_id).get(),
+                jni_utils::bchat_bytes_from_range(env, plain_text).get()
         );
     });
 }
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libsession_1util_SessionEncrypt_encryptForBlindedRecipient(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_BChatEncrypt_encryptForBlindedRecipient(JNIEnv *env,
                                                                                        jobject thiz,
                                                                                        jbyteArray message,
                                                                                        jbyteArray my_ed25519_privkey,
                                                                                        jbyteArray server_pub_key,
                                                                                        jbyteArray recipient_blind_id) {
     return jni_utils::run_catching_cxx_exception_or_throws<jobject>(env, [=] {
-        auto data = session::encrypt_for_blinded_recipient(
+        auto data = bchat::encrypt_for_blinded_recipient(
                 JavaByteArrayRef(env, my_ed25519_privkey).get(),
                 JavaByteArrayRef(env, server_pub_key).get(),
                 JavaByteArrayRef(env, recipient_blind_id).get(),
                 JavaByteArrayRef(env, message).get()
         );
 
-        return jni_utils::session_bytes_from_range(env, data).release();
+        return jni_utils::bchat_bytes_from_range(env, data).release();
     });
 }
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libsession_1util_SessionEncrypt_decryptPushNotification(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_BChatEncrypt_decryptPushNotification(JNIEnv *env,
                                                                                     jobject thiz,
                                                                                     jbyteArray message,
                                                                                     jbyteArray secret_key) {
     return jni_utils::run_catching_cxx_exception_or_throws<jobject>(env, [=] {
-        auto data = session::decrypt_push_notification(
+        auto data = bchat::decrypt_push_notification(
                 jni_utils::JavaByteArrayRef(env, message).get(),
                 jni_utils::JavaByteArrayRef(env, secret_key).get()
         );
 
-        return jni_utils::session_bytes_from_range(env, data).release();
+        return jni_utils::bchat_bytes_from_range(env, data).release();
     });
 }
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_network_loki_messenger_libsession_1util_SessionEncrypt_decryptOnsResponse(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_BChatEncrypt_decryptOnsResponse(JNIEnv *env,
                                                                                jobject thiz,
                                                                                jstring lowercase_name,
                                                                                jbyteArray ciphertext,
                                                                                jbyteArray nonce) {
     return jni_utils::run_catching_cxx_exception_or_throws<jstring>(env, [=] {
-        auto data = session::decrypt_ons_response(
+        auto data = bchat::decrypt_ons_response(
                 jni_utils::JavaStringRef(env, lowercase_name).view(),
                 jni_utils::JavaByteArrayRef(env, ciphertext).get(),
                 nonce ? std::make_optional(jni_utils::JavaByteArrayRef(env, nonce).get()) : std::nullopt
@@ -132,7 +132,7 @@ Java_network_loki_messenger_libsession_1util_SessionEncrypt_decryptOnsResponse(J
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libsession_1util_SessionEncrypt_calculateECHDAgreement(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_BChatEncrypt_calculateECHDAgreement(JNIEnv *env,
                                                                                    jobject thiz,
                                                                                    jbyteArray x25519_pub_key,
                                                                                    jbyteArray x25519_priv_key) {
@@ -161,7 +161,7 @@ Java_network_loki_messenger_libsession_1util_SessionEncrypt_calculateECHDAgreeme
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_network_loki_messenger_libsession_1util_encrypt_EncryptionStream_00024Companion_createEncryptionStreamState(
+Java_network_loki_messenger_libbchat_1util_encrypt_EncryptionStream_00024Companion_createEncryptionStreamState(
         JNIEnv *env, jobject thiz, jbyteArray javaKey, jbyteArray javaHeaderOut) {
     JavaByteArrayRef key(env, javaKey);
     JavaByteArrayRef headerOut(env, javaHeaderOut);
@@ -188,21 +188,21 @@ Java_network_loki_messenger_libsession_1util_encrypt_EncryptionStream_00024Compa
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libsession_1util_encrypt_EncryptionStream_00024Companion_encryptionStreamHeaderSize(
+Java_network_loki_messenger_libbchat_1util_encrypt_EncryptionStream_00024Companion_encryptionStreamHeaderSize(
         JNIEnv *env, jobject thiz) {
     return static_cast<jint>(crypto_secretstream_xchacha20poly1305_HEADERBYTES);
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libsession_1util_encrypt_EncryptionStream_00024Companion_encryptionStreamChunkOverhead(
+Java_network_loki_messenger_libbchat_1util_encrypt_EncryptionStream_00024Companion_encryptionStreamChunkOverhead(
         JNIEnv *env, jobject thiz) {
     return static_cast<jint>(crypto_secretstream_xchacha20poly1305_ABYTES);
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libsession_1util_encrypt_EncryptionStream_00024Companion_encryptStreamPush(
+Java_network_loki_messenger_libbchat_1util_encrypt_EncryptionStream_00024Companion_encryptStreamPush(
         JNIEnv *env, jobject thiz, jlong state_ptr, jbyteArray java_in_buf, jint in_buf_size, jbyteArray java_out_buf) {
     auto state = reinterpret_cast<crypto_secretstream_xchacha20poly1305_state*>(state_ptr);
 
@@ -229,7 +229,7 @@ Java_network_loki_messenger_libsession_1util_encrypt_EncryptionStream_00024Compa
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libsession_1util_encrypt_EncryptionStream_00024Companion_destroyEncryptionStreamState(
+Java_network_loki_messenger_libbchat_1util_encrypt_EncryptionStream_00024Companion_destroyEncryptionStreamState(
         JNIEnv *env, jobject thiz, jlong state_ptr) {
     delete reinterpret_cast<crypto_secretstream_xchacha20poly1305_state*>(state_ptr);
 }
@@ -237,7 +237,7 @@ Java_network_loki_messenger_libsession_1util_encrypt_EncryptionStream_00024Compa
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_network_loki_messenger_libsession_1util_encrypt_DecryptionStream_00024Companion_createDecryptionStreamState(
+Java_network_loki_messenger_libbchat_1util_encrypt_DecryptionStream_00024Companion_createDecryptionStreamState(
         JNIEnv *env, jobject thiz, jbyteArray javaKey, jbyteArray javaHeader) {
     JavaByteArrayRef key(env, javaKey);
     JavaByteArrayRef header(env, javaHeader);
@@ -267,7 +267,7 @@ Java_network_loki_messenger_libsession_1util_encrypt_DecryptionStream_00024Compa
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libsession_1util_encrypt_DecryptionStream_00024Companion_decryptionStreamPull(
+Java_network_loki_messenger_libbchat_1util_encrypt_DecryptionStream_00024Companion_decryptionStreamPull(
         JNIEnv *env, jobject thiz, jlong native_state_ptr, jbyteArray java_in_buf, jint in_buf_len, jbyteArray java_out_buf) {
     JavaByteArrayRef out_buf(env, java_out_buf);
     JavaByteArrayRef in_buf(env, java_in_buf);

@@ -1,11 +1,11 @@
 
-#ifndef SESSION_ANDROID_USER_GROUPS_H
-#define SESSION_ANDROID_USER_GROUPS_H
+#ifndef BCHAT_ANDROID_USER_GROUPS_H
+#define BCHAT_ANDROID_USER_GROUPS_H
 
 #include "jni_utils.h"
-#include <session/config/user_groups.hpp>
+#include <bchat/config/user_groups.hpp>
 
-jni_utils::JavaLocalRef<jobject> serialize_base_community(JNIEnv *env, const session::config::community& base_community);
-session::config::community deserialize_base_community(JNIEnv *env, jobject base_community);
+jni_utils::JavaLocalRef<jobject> serialize_base_community(JNIEnv *env, const bchat::config::community& base_community);
+bchat::config::community deserialize_base_community(JNIEnv *env, jobject base_community);
 
-#endif //SESSION_ANDROID_USER_GROUPS_H
+#endif //BCHAT_ANDROID_USER_GROUPS_H

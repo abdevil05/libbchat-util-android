@@ -17,7 +17,7 @@ using WebPPtr = std::unique_ptr<T, void (*)(T *)>;
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libsession_1util_image_WebPUtils_reencodeWebPAnimation(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_image_WebPUtils_reencodeWebPAnimation(JNIEnv *env,
                                                                                    jobject thiz,
                                                                                    jbyteArray input,
                                                                                    jlong timeout_ms,
@@ -135,7 +135,7 @@ static void destroyWebPPicture(WebPPicture* pic) {
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libsession_1util_image_WebPUtils_encodeGifToWebP(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_image_WebPUtils_encodeGifToWebP(JNIEnv *env,
                                                                              jobject thiz,
                                                                              jbyteArray input,
                                                                              jlong timeout_mills,

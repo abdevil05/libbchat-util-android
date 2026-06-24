@@ -1,4 +1,4 @@
-#include <session/session_protocol.hpp>
+#include <bchat/bchat_protocol.hpp>
 #include <oxenc/base64.h>
 #include <oxenc/hex.h>
 #include <nlohmann/json.hpp>
@@ -17,7 +17,7 @@ static std::array<unsigned char, N> from_hex(std::span<char> input) {
     return output;
 }
 
-session::ProProof java_to_cpp_proof(JNIEnv *env, jobject proof) {
+bchat::ProProof java_to_cpp_proof(JNIEnv *env, jobject proof) {
     struct ProProofMethods : public JavaClassInfo {
         jmethodID get_version;
         jmethodID get_gen_index_hash;
@@ -51,9 +51,9 @@ session::ProProof java_to_cpp_proof(JNIEnv *env, jobject proof) {
     };
 }
 
-JavaLocalRef<jobject> cpp_to_java_proof(JNIEnv *env, const session::ProProof &proof) {
+JavaLocalRef<jobject> cpp_to_java_proof(JNIEnv *env, const bchat::ProProof &proof) {
     static BasicJavaClassInfo class_info(env,
-            "network/loki/messenger/libsession_util/pro/ProProof",
+            "network/loki/messenger/libbchat_util/pro/ProProof",
             "(I[B[BJ[B)V");
 
     return {env, env->NewObject(
@@ -69,18 +69,18 @@ JavaLocalRef<jobject> cpp_to_java_proof(JNIEnv *env, const session::ProProof &pr
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libsession_1util_pro_ProProof_nativeStatus(JNIEnv *env, jobject thiz,
+Java_network_loki_messenger_libbchat_1util_pro_ProProof_nativeStatus(JNIEnv *env, jobject thiz,
                                                                        jlong now_unix_ts,
                                                                        jbyteArray verify_pub_key,
                                                                        jbyteArray signed_message_data,
                                                                        jbyteArray signed_message_signature) {
     return run_catching_cxx_exception_or_throws<jint>(env, [=]() {
-        std::optional<session::ProSignedMessage> signed_msg;
+        std::optional<bchat::ProSignedMessage> signed_msg;
         JavaByteArrayRef signed_message_data_ref(env, signed_message_data);
         JavaByteArrayRef signed_message_signature_ref(env, signed_message_signature);
 
         if (signed_message_data && signed_message_signature) {
-            signed_msg.emplace(session::ProSignedMessage {
+            signed_msg.emplace(bchat::ProSignedMessage {
                     .sig = signed_message_signature_ref.get(),
                     .msg = signed_message_data_ref.get(),
             });

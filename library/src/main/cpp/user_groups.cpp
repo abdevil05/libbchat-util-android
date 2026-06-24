@@ -1,17 +1,17 @@
 #include "user_groups.h"
 #include "oxenc/hex.h"
 #include "util.h"
-#include "session/ed25519.hpp"
+#include "bchat/ed25519.hpp"
 
 using namespace jni_utils;
 
-inline session::config::UserGroups* ptrToUserGroups(JNIEnv *env, jobject obj) {
-    auto configClass = JavaLocalRef(env, env->FindClass("network/loki/messenger/libsession_util/UserGroupsConfig"));
+inline bchat::config::UserGroups* ptrToUserGroups(JNIEnv *env, jobject obj) {
+    auto configClass = JavaLocalRef(env, env->FindClass("network/loki/messenger/libbchat_util/UserGroupsConfig"));
     jfieldID pointerField = env->GetFieldID(configClass.get(), "pointer", "J");
-    return (session::config::UserGroups*) env->GetLongField(obj, pointerField);
+    return (bchat::config::UserGroups*) env->GetLongField(obj, pointerField);
 }
 
-static void deserialize_members_into(JNIEnv *env, jobject members_map, session::config::legacy_group_info& to_append_group) {
+static void deserialize_members_into(JNIEnv *env, jobject members_map, bchat::config::legacy_group_info& to_append_group) {
     auto map_class = JavaLocalRef(env, env->FindClass("java/util/Map"));
     auto map_entry_class = JavaLocalRef(env, env->FindClass("java/util/Map$Entry"));
     auto set_class = JavaLocalRef(env, env->FindClass("java/util/Set"));
@@ -39,8 +39,8 @@ static void deserialize_members_into(JNIEnv *env, jobject members_map, session::
 }
 
 
-static session::config::legacy_group_info deserialize_legacy_group_info(JNIEnv *env, jobject info, session::config::UserGroups* conf) {
-    auto clazz = JavaLocalRef(env, env->FindClass("network/loki/messenger/libsession_util/util/GroupInfo$LegacyGroupInfo"));
+static bchat::config::legacy_group_info deserialize_legacy_group_info(JNIEnv *env, jobject info, bchat::config::UserGroups* conf) {
+    auto clazz = JavaLocalRef(env, env->FindClass("network/loki/messenger/libbchat_util/util/GroupInfo$LegacyGroupInfo"));
     auto id_field = env->GetFieldID(clazz.get(), "accountId", "Ljava/lang/String;");
     auto name_field = env->GetFieldID(clazz.get(), "name", "Ljava/lang/String;");
     auto members_field = env->GetFieldID(clazz.get(), "members", "Ljava/util/Map;");
@@ -73,13 +73,13 @@ static session::config::legacy_group_info deserialize_legacy_group_info(JNIEnv *
     return info_deserialized;
 }
 
-static session::config::community_info deserialize_community_info(JNIEnv *env, jobject info, session::config::UserGroups* conf) {
+static bchat::config::community_info deserialize_community_info(JNIEnv *env, jobject info, bchat::config::UserGroups* conf) {
     struct ClassInfo : JavaClassInfo {
         jmethodID base_info_getter;
         jmethodID priority_getter;
 
-        ClassInfo(JNIEnv *env): JavaClassInfo(env, "network/loki/messenger/libsession_util/util/GroupInfo$CommunityGroupInfo"),
-            base_info_getter(env->GetMethodID(java_class, "getCommunity", "()Lnetwork/loki/messenger/libsession_util/util/BaseCommunityInfo;")),
+        ClassInfo(JNIEnv *env): JavaClassInfo(env, "network/loki/messenger/libbchat_util/util/GroupInfo$CommunityGroupInfo"),
+            base_info_getter(env->GetMethodID(java_class, "getCommunity", "()Lnetwork/loki/messenger/libbchat_util/util/BaseCommunityInfo;")),
             priority_getter(env->GetMethodID(java_class, "getPriority", "()J")) {}
     };
 
@@ -110,19 +110,19 @@ static jobject serialize_members(JNIEnv *env, std::map<std::string, bool> member
     return new_map;
 }
 
-static JavaLocalRef<jobject> serialize_legacy_group_info(JNIEnv *env, session::config::legacy_group_info info) {
-    auto account_id = JavaLocalRef(env, env->NewStringUTF(info.session_id.data()));
+static JavaLocalRef<jobject> serialize_legacy_group_info(JNIEnv *env, bchat::config::legacy_group_info info) {
+    auto account_id = JavaLocalRef(env, env->NewStringUTF(info.bchat_id.data()));
     auto name = JavaLocalRef(env, env->NewStringUTF(info.name.data()));
     auto members = JavaLocalRef(env, serialize_members(env, info.members()));
-    auto enc_pubkey = session_bytes_from_range(env, info.enc_pubkey);
-    auto enc_seckey = session_bytes_from_range(env, info.enc_seckey);
+    auto enc_pubkey = bchat_bytes_from_range(env, info.enc_pubkey);
+    auto enc_seckey = bchat_bytes_from_range(env, info.enc_seckey);
     long long priority = info.priority;
     long long joined_at = info.joined_at;
 
     static BasicJavaClassInfo class_info(
             env,
-            "network/loki/messenger/libsession_util/util/GroupInfo$LegacyGroupInfo",
-            "(Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Lnetwork/loki/messenger/libsession_util/util/Bytes;Lnetwork/loki/messenger/libsession_util/util/Bytes;JJJ)V"
+            "network/loki/messenger/libbchat_util/util/GroupInfo$LegacyGroupInfo",
+            "(Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Lnetwork/loki/messenger/libbchat_util/util/Bytes;Lnetwork/loki/messenger/libbchat_util/util/Bytes;JJJ)V"
     );
     
     return {env, env->NewObject(class_info.java_class, class_info.constructor,
@@ -131,24 +131,24 @@ static JavaLocalRef<jobject> serialize_legacy_group_info(JNIEnv *env, session::c
                                 (jlong) info.disappearing_timer.count(), joined_at)};
 }
 
-static JavaLocalRef<jobject> serialize_closed_group_info(JNIEnv* env, session::config::group_info info) {
-    auto session_id = jstring_from_optional(env, info.id);
-    auto admin_bytes = JavaLocalRef(env, info.secretkey.empty() ? nullptr : session_bytes_from_range(env, info.secretkey).release());
-    auto auth_bytes = JavaLocalRef(env, info.auth_data.empty() ? nullptr : session_bytes_from_range(env, info.auth_data).release());
+static JavaLocalRef<jobject> serialize_closed_group_info(JNIEnv* env, bchat::config::group_info info) {
+    auto bchat_id = jstring_from_optional(env, info.id);
+    auto admin_bytes = JavaLocalRef(env, info.secretkey.empty() ? nullptr : bchat_bytes_from_range(env, info.secretkey).release());
+    auto auth_bytes = JavaLocalRef(env, info.auth_data.empty() ? nullptr : bchat_bytes_from_range(env, info.auth_data).release());
     auto name = jstring_from_optional(env, info.name);
 
     static BasicJavaClassInfo class_info(
             env,
-            "network/loki/messenger/libsession_util/util/GroupInfo$ClosedGroupInfo",
-            "(Ljava/lang/String;Lnetwork/loki/messenger/libsession_util/util/Bytes;Lnetwork/loki/messenger/libsession_util/util/Bytes;JZLjava/lang/String;ZZJ)V"
+            "network/loki/messenger/libbchat_util/util/GroupInfo$ClosedGroupInfo",
+            "(Ljava/lang/String;Lnetwork/loki/messenger/libbchat_util/util/Bytes;Lnetwork/loki/messenger/libbchat_util/util/Bytes;JZLjava/lang/String;ZZJ)V"
     );
 
     return {env, env->NewObject(class_info.java_class, class_info.constructor,
-                          session_id.get(), admin_bytes.get(), auth_bytes.get(), (jlong)info.priority, info.invited, name.get(),
+                          bchat_id.get(), admin_bytes.get(), auth_bytes.get(), (jlong)info.priority, info.invited, name.get(),
                           info.kicked(), info.is_destroyed(), info.joined_at)};
 }
 
-static session::config::group_info deserialize_closed_group_info(JNIEnv* env, jobject info_serialized) {
+static bchat::config::group_info deserialize_closed_group_info(JNIEnv* env, jobject info_serialized) {
     struct ClassInfo : public JavaClassInfo {
         jmethodID id_getter;
         jmethodID secret_method;
@@ -184,7 +184,7 @@ static session::config::group_info deserialize_closed_group_info(JNIEnv* env, jo
     auto secret_bytes = util::vector_from_bytes(env, secret_jBytes.get());
     auto auth_bytes = util::vector_from_bytes(env, auth_jBytes.get());
 
-    session::config::group_info group_info(JavaStringRef(env, id_jobject.get()).copy());
+    bchat::config::group_info group_info(JavaStringRef(env, id_jobject.get()).copy());
     group_info.auth_data = auth_bytes;
     group_info.secretkey = secret_bytes;
     group_info.priority = env->CallLongMethod(info_serialized, class_info.priority_getter);
@@ -203,21 +203,21 @@ static session::config::group_info deserialize_closed_group_info(JNIEnv* env, jo
     return group_info;
 }
 
-static JavaLocalRef<jobject> serialize_community_info(JNIEnv *env, const session::config::community_info &info) {
+static JavaLocalRef<jobject> serialize_community_info(JNIEnv *env, const bchat::config::community_info &info) {
     auto priority = (long long)info.priority;
     auto serialized_info = serialize_base_community(env, info);
 
     static BasicJavaClassInfo class_info(
             env,
-            "network/loki/messenger/libsession_util/util/GroupInfo$CommunityGroupInfo",
-            "(Lnetwork/loki/messenger/libsession_util/util/BaseCommunityInfo;J)V"
+            "network/loki/messenger/libbchat_util/util/GroupInfo$CommunityGroupInfo",
+            "(Lnetwork/loki/messenger/libbchat_util/util/BaseCommunityInfo;J)V"
     );
 
     return {env, env->NewObject(class_info.java_class, class_info.constructor, serialized_info.get(), priority)};
 }
 
-JavaLocalRef<jobject> serialize_base_community(JNIEnv *env, const session::config::community& community) {
-    static BasicJavaClassInfo class_info(env, "network/loki/messenger/libsession_util/util/BaseCommunityInfo",
+JavaLocalRef<jobject> serialize_base_community(JNIEnv *env, const bchat::config::community& community) {
+    static BasicJavaClassInfo class_info(env, "network/loki/messenger/libbchat_util/util/BaseCommunityInfo",
                                         "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
 
     auto base_url = jni_utils::JavaLocalRef(env, env->NewStringUTF(community.base_url().data()));
@@ -228,7 +228,7 @@ JavaLocalRef<jobject> serialize_base_community(JNIEnv *env, const session::confi
                                 base_url.get(), room.get(), pubkey_jstring.get())};
 }
 
-session::config::community deserialize_base_community(JNIEnv *env, jobject base_community) {
+bchat::config::community deserialize_base_community(JNIEnv *env, jobject base_community) {
     struct ClassInfo : public JavaClassInfo {
         jmethodID base_url_getter;
         jmethodID room_getter;
@@ -248,7 +248,7 @@ session::config::community deserialize_base_community(JNIEnv *env, jobject base_
     jni_utils::JavaLocalRef room(env, (jstring)env->CallObjectMethod(base_community, class_info.room_getter));
     jni_utils::JavaLocalRef pub_key_hex(env, (jstring)env->CallObjectMethod(base_community, class_info.pubkey_getter));
 
-    return session::config::community(
+    return bchat::config::community(
             jni_utils::JavaStringRef(env, base_url.get()).view(),
             jni_utils::JavaStringRef(env, room.get()).view(),
             jni_utils::JavaStringRef(env, pub_key_hex.get()).view()
@@ -258,14 +258,14 @@ session::config::community deserialize_base_community(JNIEnv *env, jobject base_
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libsession_1util_util_GroupInfo_00024LegacyGroupInfo_00024Companion_NAME_1MAX_1LENGTH(
+Java_network_loki_messenger_libbchat_1util_util_GroupInfo_00024LegacyGroupInfo_00024Companion_NAME_1MAX_1LENGTH(
         JNIEnv *env, jobject thiz) {
-    return session::config::legacy_group_info::NAME_MAX_LENGTH;
+    return bchat::config::legacy_group_info::NAME_MAX_LENGTH;
 }
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_getCommunityInfo(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_getCommunityInfo(JNIEnv *env,
                                                                                jobject thiz,
                                                                                jstring base_url,
                                                                                jstring room) {
@@ -284,7 +284,7 @@ Java_network_loki_messenger_libsession_1util_UserGroupsConfig_getCommunityInfo(J
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_getLegacyGroupInfo(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_getLegacyGroupInfo(JNIEnv *env,
                                                                                  jobject thiz,
                                                                                  jstring account_id) {
     auto conf = ptrToUserGroups(env, thiz);
@@ -298,7 +298,7 @@ Java_network_loki_messenger_libsession_1util_UserGroupsConfig_getLegacyGroupInfo
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_getOrConstructCommunityInfo(
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_getOrConstructCommunityInfo(
         JNIEnv *env, jobject thiz, jstring base_url, jstring room, jstring pub_key_hex) {
     auto conf = ptrToUserGroups(env, thiz);
 
@@ -312,7 +312,7 @@ Java_network_loki_messenger_libsession_1util_UserGroupsConfig_getOrConstructComm
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_getOrConstructLegacyGroupInfo(
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_getOrConstructLegacyGroupInfo(
         JNIEnv *env, jobject thiz, jstring account_id) {
     auto conf = ptrToUserGroups(env, thiz);
     auto group = conf->get_or_construct_legacy_group(JavaStringRef(env, account_id).view());
@@ -321,12 +321,12 @@ Java_network_loki_messenger_libsession_1util_UserGroupsConfig_getOrConstructLega
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_set__Lnetwork_loki_messenger_libsession_1util_util_GroupInfo_2(
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_set__Lnetwork_loki_messenger_libbchat_1util_util_GroupInfo_2(
         JNIEnv *env, jobject thiz, jobject group_info) {
     auto conf = ptrToUserGroups(env, thiz);
-    auto community_info = env->FindClass("network/loki/messenger/libsession_util/util/GroupInfo$CommunityGroupInfo");
-    auto legacy_info = env->FindClass("network/loki/messenger/libsession_util/util/GroupInfo$LegacyGroupInfo");
-    auto closed_group_info = env->FindClass("network/loki/messenger/libsession_util/util/GroupInfo$ClosedGroupInfo");
+    auto community_info = env->FindClass("network/loki/messenger/libbchat_util/util/GroupInfo$CommunityGroupInfo");
+    auto legacy_info = env->FindClass("network/loki/messenger/libbchat_util/util/GroupInfo$LegacyGroupInfo");
+    auto closed_group_info = env->FindClass("network/loki/messenger/libbchat_util/util/GroupInfo$ClosedGroupInfo");
 
     auto object_class = env->GetObjectClass(group_info);
     if (env->IsSameObject(community_info, object_class)) {
@@ -344,12 +344,12 @@ Java_network_loki_messenger_libsession_1util_UserGroupsConfig_set__Lnetwork_loki
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_erase__Lnetwork_loki_messenger_libsession_1util_util_GroupInfo_2(
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_erase__Lnetwork_loki_messenger_libbchat_1util_util_GroupInfo_2(
         JNIEnv *env, jobject thiz, jobject group_info) {
     auto conf = ptrToUserGroups(env, thiz);
-    auto communityInfo = env->FindClass("network/loki/messenger/libsession_util/util/GroupInfo$CommunityGroupInfo");
-    auto legacyInfo = env->FindClass("network/loki/messenger/libsession_util/util/GroupInfo$LegacyGroupInfo");
-    auto closedGroupInfo = env->FindClass("network/loki/messenger/libsession_util/util/GroupInfo$ClosedGroupInfo");
+    auto communityInfo = env->FindClass("network/loki/messenger/libbchat_util/util/GroupInfo$CommunityGroupInfo");
+    auto legacyInfo = env->FindClass("network/loki/messenger/libbchat_util/util/GroupInfo$LegacyGroupInfo");
+    auto closedGroupInfo = env->FindClass("network/loki/messenger/libbchat_util/util/GroupInfo$ClosedGroupInfo");
     auto object_class = env->GetObjectClass(group_info);
     if (env->IsSameObject(communityInfo, object_class)) {
         auto deserialized = deserialize_community_info(env, group_info, conf);
@@ -365,7 +365,7 @@ Java_network_loki_messenger_libsession_1util_UserGroupsConfig_erase__Lnetwork_lo
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_sizeCommunityInfo(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_sizeCommunityInfo(JNIEnv *env,
                                                                                 jobject thiz) {
     auto conf = ptrToUserGroups(env, thiz);
     return conf->size_communities();
@@ -373,7 +373,7 @@ Java_network_loki_messenger_libsession_1util_UserGroupsConfig_sizeCommunityInfo(
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_sizeLegacyGroupInfo(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_sizeLegacyGroupInfo(JNIEnv *env,
                                                                                   jobject thiz) {
     auto conf = ptrToUserGroups(env, thiz);
     return conf->size_legacy_groups();
@@ -381,19 +381,19 @@ Java_network_loki_messenger_libsession_1util_UserGroupsConfig_sizeLegacyGroupInf
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_size(JNIEnv *env, jobject thiz) {
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_size(JNIEnv *env, jobject thiz) {
     auto conf = ptrToUserGroups(env, thiz);
     return conf->size();
 }
 
-inline jobject iterator_as_java_list(JNIEnv *env, session::config::UserGroups::iterator begin, session::config::UserGroups::iterator end) {
-    return jlist_from_iterator(env, begin, end, [](JNIEnv *env, const session::config::UserGroups::value_type &item) {
+inline jobject iterator_as_java_list(JNIEnv *env, bchat::config::UserGroups::iterator begin, bchat::config::UserGroups::iterator end) {
+    return jlist_from_iterator(env, begin, end, [](JNIEnv *env, const bchat::config::UserGroups::value_type &item) {
         std::optional<JavaLocalRef<jobject>> serialized = std::nullopt;
-        if (auto* lgc = std::get_if<session::config::legacy_group_info>(&item)) {
+        if (auto* lgc = std::get_if<bchat::config::legacy_group_info>(&item)) {
             serialized = serialize_legacy_group_info(env, *lgc);
-        } else if (auto* community = std::get_if<session::config::community_info>(&item)) {
+        } else if (auto* community = std::get_if<bchat::config::community_info>(&item)) {
             serialized = serialize_community_info(env, *community);
-        } else if (auto* closed = std::get_if<session::config::group_info>(&item)) {
+        } else if (auto* closed = std::get_if<bchat::config::group_info>(&item)) {
             serialized = serialize_closed_group_info(env, *closed);
         }
 
@@ -403,14 +403,14 @@ inline jobject iterator_as_java_list(JNIEnv *env, session::config::UserGroups::i
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_all(JNIEnv *env, jobject thiz) {
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_all(JNIEnv *env, jobject thiz) {
     auto conf = ptrToUserGroups(env, thiz);
     return iterator_as_java_list(env, conf->begin(), conf->end());
 }
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_allCommunityInfo(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_allCommunityInfo(JNIEnv *env,
                                                                                jobject thiz) {
     auto conf = ptrToUserGroups(env, thiz);
     return iterator_as_java_list(env, conf->begin_communities(), conf->end());
@@ -418,7 +418,7 @@ Java_network_loki_messenger_libsession_1util_UserGroupsConfig_allCommunityInfo(J
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_allLegacyGroupInfo(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_allLegacyGroupInfo(JNIEnv *env,
                                                                                  jobject thiz) {
     auto conf = ptrToUserGroups(env, thiz);
     return iterator_as_java_list(env, conf->begin_legacy_groups(), conf->end());
@@ -426,7 +426,7 @@ Java_network_loki_messenger_libsession_1util_UserGroupsConfig_allLegacyGroupInfo
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_eraseCommunity__Lnetwork_loki_messenger_libsession_1util_util_BaseCommunityInfo_2(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_eraseCommunity__Lnetwork_loki_messenger_libbchat_1util_util_BaseCommunityInfo_2(JNIEnv *env,
                                                                              jobject thiz,
                                                                              jobject base_community_info) {
     auto conf = ptrToUserGroups(env, thiz);
@@ -436,7 +436,7 @@ Java_network_loki_messenger_libsession_1util_UserGroupsConfig_eraseCommunity__Ln
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_eraseCommunity__Ljava_lang_String_2Ljava_lang_String_2(
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_eraseCommunity__Ljava_lang_String_2Ljava_lang_String_2(
         JNIEnv *env, jobject thiz, jstring server, jstring room) {
     auto conf = ptrToUserGroups(env, thiz);
     auto community = conf->get_community(
@@ -451,7 +451,7 @@ Java_network_loki_messenger_libsession_1util_UserGroupsConfig_eraseCommunity__Lj
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_eraseLegacyGroup(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_eraseLegacyGroup(JNIEnv *env,
                                                                                jobject thiz,
                                                                                jstring account_id) {
     auto conf = ptrToUserGroups(env, thiz);
@@ -461,11 +461,11 @@ Java_network_loki_messenger_libsession_1util_UserGroupsConfig_eraseLegacyGroup(J
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_getClosedGroup(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_getClosedGroup(JNIEnv *env,
                                                                              jobject thiz,
-                                                                             jstring session_id) {
+                                                                             jstring bchat_id) {
     auto config = ptrToUserGroups(env, thiz);
-    auto group = config->get_group(JavaStringRef(env, session_id).view());
+    auto group = config->get_group(JavaStringRef(env, bchat_id).view());
 
     if (group) {
         return serialize_closed_group_info(env, *group).release();
@@ -475,17 +475,17 @@ Java_network_loki_messenger_libsession_1util_UserGroupsConfig_getClosedGroup(JNI
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_getOrConstructClosedGroup(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_getOrConstructClosedGroup(JNIEnv *env,
                                                                                         jobject thiz,
-                                                                                        jstring session_id) {
+                                                                                        jstring bchat_id) {
     auto config = ptrToUserGroups(env, thiz);
-    auto group = config->get_or_construct_group(JavaStringRef(env, session_id).view());
+    auto group = config->get_or_construct_group(JavaStringRef(env, bchat_id).view());
     return serialize_closed_group_info(env, group).release();
 }
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_allClosedGroupInfo(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_allClosedGroupInfo(JNIEnv *env,
                                                                                  jobject thiz) {
     auto conf = ptrToUserGroups(env, thiz);
     return iterator_as_java_list(env, conf->begin_groups(), conf->end());
@@ -493,7 +493,7 @@ Java_network_loki_messenger_libsession_1util_UserGroupsConfig_allClosedGroupInfo
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_createGroup(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_createGroup(JNIEnv *env,
                                                                           jobject thiz) {
     auto config = ptrToUserGroups(env, thiz);
 
@@ -503,7 +503,7 @@ Java_network_loki_messenger_libsession_1util_UserGroupsConfig_createGroup(JNIEnv
 
 extern "C"
 JNIEXPORT jlong JNICALL
-  Java_network_loki_messenger_libsession_1util_UserGroupsConfig_sizeClosedGroup(JNIEnv *env,
+  Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_sizeClosedGroup(JNIEnv *env,
                                                                               jobject thiz) {
     auto config = ptrToUserGroups(env, thiz);
     return config->size_groups();
@@ -511,17 +511,17 @@ JNIEXPORT jlong JNICALL
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_network_loki_messenger_libsession_1util_UserGroupsConfig_eraseClosedGroup(JNIEnv *env,
+Java_network_loki_messenger_libbchat_1util_UserGroupsConfig_eraseClosedGroup(JNIEnv *env,
                                                                                jobject thiz,
-                                                                               jstring session_id) {
+                                                                               jstring bchat_id) {
     auto config = ptrToUserGroups(env, thiz);
-    bool return_value = config->erase_group(JavaStringRef(env, session_id).view());
+    bool return_value = config->erase_group(JavaStringRef(env, bchat_id).view());
     return return_value;
 }
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libsession_1util_util_GroupInfo_00024ClosedGroupInfo_adminKeyFromSeed(
+Java_network_loki_messenger_libbchat_1util_util_GroupInfo_00024ClosedGroupInfo_adminKeyFromSeed(
         JNIEnv *env, jclass clazz, jbyteArray seed) {
     auto len = env->GetArrayLength(seed);
     if (len != 32) {
@@ -529,7 +529,7 @@ Java_network_loki_messenger_libsession_1util_util_GroupInfo_00024ClosedGroupInfo
         return nullptr;
     }
 
-    auto admin_key = session::ed25519::ed25519_key_pair(
+    auto admin_key = bchat::ed25519::ed25519_key_pair(
             JavaByteArrayRef(env, seed).get()).second;
 
     return util::bytes_from_span(env, std::span<const unsigned char>(admin_key.data(), admin_key.size())).release();

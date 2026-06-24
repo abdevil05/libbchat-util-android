@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.18.1)
 
 # Declares and names the project.
 
-project("session_util")
+project("bchat_util")
 
 # Compiles in C++20 mode
 set(CMAKE_CXX_STANDARD 20)
@@ -22,7 +22,7 @@ set(CMAKE_CXX_FLAGS -Wno-deprecated-declarations)
 
 set(STATIC_BUNDLE ON)
 set(ENABLE_ONIONREQ OFF)
-add_subdirectory(../../../../libsession-util libsession)
+add_subdirectory(../../../../libbchat-util libbchat)
 
 include(FetchContent)
 
@@ -114,13 +114,13 @@ set(SOURCES
 )
 
 add_library( # Sets the name of the library.
-        session_util
+        bchat_util
         # Sets the library as a shared library.
         SHARED
         # Provides a relative path to your source file(s).
         ${SOURCES})
 
-target_include_directories(session_util
+target_include_directories(bchat_util
         PRIVATE
             ${cgif_SOURCE_DIR}/inc
             ${libyuv_SOURCE_DIR}/include
@@ -146,11 +146,11 @@ find_library( # Sets the name of the path variable.
 # build script, prebuilt third-party libraries, or system libraries.
 
 target_link_libraries( # Specifies the target library.
-        session_util
+        bchat_util
         PUBLIC
-        libsession::util
-        libsession::config
-        libsession::crypto
+        libbchat::util
+        libbchat::config
+        libbchat::crypto
         libsodium::sodium-internal
         # Links the target library to the log library
         # included in the NDK.

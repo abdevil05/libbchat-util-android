@@ -1,5 +1,5 @@
-#ifndef SESSION_ANDROID_JNI_UTILS_H
-#define SESSION_ANDROID_JNI_UTILS_H
+#ifndef BCHAT_ANDROID_JNI_UTILS_H
+#define BCHAT_ANDROID_JNI_UTILS_H
 
 #include <jni.h>
 #include <exception>
@@ -42,10 +42,10 @@ namespace jni_utils {
         return run_catching_cxx_exception_or<RetT>(f, [env](const char *msg) {
             jclass exceptionClass = env->FindClass("java/lang/RuntimeException");
             if (msg) {
-                auto formatted_message = std::string("libsession: C++ exception: ") + msg;
+                auto formatted_message = std::string("libbchat: C++ exception: ") + msg;
                 env->ThrowNew(exceptionClass, formatted_message.c_str());
             } else {
-                env->ThrowNew(exceptionClass, "libsession: Unknown C++ exception");
+                env->ThrowNew(exceptionClass, "libbchat: Unknown C++ exception");
             }
 
             return RetT();
@@ -189,9 +189,9 @@ namespace jni_utils {
      * Create a Java Bytes class from the collection. The collection must be continous range of byte data
      */
     template <typename Collection>
-    JavaLocalRef<jobject> session_bytes_from_range(JNIEnv *env, const Collection &obj) {
+    JavaLocalRef<jobject> bchat_bytes_from_range(JNIEnv *env, const Collection &obj) {
         static BasicJavaClassInfo bytes_class(
-                env, "network/loki/messenger/libsession_util/util/Bytes", "([B)V");
+                env, "network/loki/messenger/libbchat_util/util/Bytes", "([B)V");
 
         static_assert(sizeof(*obj.data()) == sizeof(jbyte));
 
@@ -359,4 +359,4 @@ namespace jni_utils {
 
 }
 
-#endif //SESSION_ANDROID_JNI_UTILS_H
+#endif //BCHAT_ANDROID_JNI_UTILS_H

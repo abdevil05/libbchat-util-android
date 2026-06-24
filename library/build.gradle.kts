@@ -8,13 +8,13 @@ plugins {
     id("com.google.protobuf") version "0.9.5"
 }
 
-group = "org.sessionfoundation"
+group = "org.bchatfoundation"
 version = System.getenv("VERSION") ?: "dev-snapshot"
 
 val protobufVersion = "4.34.0"
 
 android {
-    namespace = "org.sessionfoundation.libsession_util"
+    namespace = "org.bchatfoundation.libbchat_util"
     compileSdk = 36
 
     defaultConfig {
@@ -29,8 +29,9 @@ android {
                     "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
                     "-DENABLE_NETWORKING=OFF",
                     "-DENABLE_NETWORKING_SROUTER=OFF",
+                    "-DSUBMODULE_CHECK=OFF",
                 )
-                targets("session_util")
+                targets("bchat_util")
             }
         }
     }
@@ -105,7 +106,7 @@ publishing {
             version = project.version.toString()
 
             pom {
-                url = "getsession.org"
+                url = "getbchat.org"
 
                 licenses {
                     license {
@@ -115,8 +116,8 @@ publishing {
                 }
 
                 scm {
-                    connection = "scm:git:https://github.com/session-foundation/libsession-android"
-                    url = "https://github.com/session-foundation/libsession-android"
+                    connection = "scm:git:https://github.com/bchat-foundation/libbchat-android"
+                    url = "https://github.com/bchat-foundation/libbchat-android"
                 }
             }
 
@@ -146,5 +147,5 @@ dependencies {
 
     api("com.google.protobuf:protobuf-java:$protobufVersion")
 
-    protobuf(files("../libsession-util/proto/SessionProtos.proto"))
+    protobuf(files("../libbchat-util/proto/BChatProtos.proto"))
 }
