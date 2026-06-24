@@ -1,0 +1,3 @@
+[submodule "libbchat-util"]
+	path = libbchat-util
+	url = https://github.com/peter-pratt/libbchat-util.git

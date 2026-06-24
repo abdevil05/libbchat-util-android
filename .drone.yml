@@ -1,0 +1,27 @@
+kind: pipeline
+type: docker
+name: Build and Publish
+trigger:
+  event: [push, tag]
+
+steps:
+  - name: check out
+    image: drone/git
+    commands:
+      - git fetch --tags
+      - git submodule update --init --recursive --depth=1
+
+  - name: publish
+    image: registry.oxen.rocks/lokinet-ci-android:latest
+    environment:
+      ANDROID_HOME: /usr/lib/android-sdk
+    commands:
+      - env VERSION=`git describe --tags --dirty` ./gradlew publish
+
+  - name: upload the artifact
+    image: registry.oxen.rocks/lokinet-ci-android:latest
+    environment:
+      SSH_KEY:
+        from_secret: SSH_KEY
+    commands:
+      - ./scripts/upload-maven-artifacts.py
