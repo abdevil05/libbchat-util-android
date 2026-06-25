@@ -106,7 +106,7 @@ publishing {
             version = project.version.toString()
 
             pom {
-                url = "getbchat.org"
+                url = "https://getbchat.io"
 
                 licenses {
                     license {
@@ -116,8 +116,8 @@ publishing {
                 }
 
                 scm {
-                    connection = "scm:git:https://github.com/bchat-foundation/libbchat-android"
-                    url = "https://github.com/bchat-foundation/libbchat-android"
+                    connection = "scm:git:https://github.com/abdevil05/libbchat-util-android"
+                    url = "https://github.com/abdevil05/libbchat-util-android"
                 }
             }
 
@@ -125,11 +125,19 @@ publishing {
                 from(components["release"])
             }
         }
+    }
 
-        repositories {
-            maven {
-                name = "local"
-                url = uri(layout.buildDirectory.dir("repo"))
+    repositories {
+        maven {
+            name = "local"
+            url = uri(layout.buildDirectory.dir("repo"))
+        }
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/abdevil05/libbchat-util-android")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR") ?: ""
+                password = System.getenv("GITHUB_TOKEN") ?: ""
             }
         }
     }

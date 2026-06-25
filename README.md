@@ -8,7 +8,11 @@ To start using this library, add this into your top level `build.gradle`'s repos
 
 ```gradle
 maven {
-    url uri("https://oxen.rocks/bchat-foundation/libbchat-util-android/maven")
+    url uri("https://maven.pkg.github.com/abdevil05/libbchat-util-android")
+    credentials {
+        username = findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+        password = findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+    }
     content {
         includeGroup('org.bchatfoundation')
     }
@@ -21,7 +25,9 @@ Then in your app's `build.gradle', you can add this as dependency:
 implementation 'org.bchatfoundation:libbchat-util-android:LATEST_VERSION_NUMBER'
 ```
 
-All tags pushed to this repository will be built and you can find out the latest by visiting https://github.com/bchat-foundation/libbchat-util-android/tags
+All tags pushed to this repository will be built and published to GitHub Packages. You can find the latest version by visiting https://github.com/abdevil05/libbchat-util-android/tags
+
+GitHub Packages' Maven URL is a registry endpoint, not a browser page. After the first successful publish, view the package from the Packages tab on https://github.com/abdevil05 or fetch Maven metadata from the registry with GitHub credentials.
 
 #### Versioning
 
@@ -35,4 +41,4 @@ and we'll have a formal release version built.
 
 #### Development & deployment
 
-Everyone's welcome to open a Pull Request. However, in order to push any build artifact to `oxen.rocks`, the changes have to come from either the merge of a PR, or the PRs to be opened directly in this repo, as per permission setup of our CI.
+Everyone's welcome to open a Pull Request. Release artifacts are published by GitHub Actions to GitHub Packages on pushes to `main`/`master` and version tags.

@@ -1,0 +1,66 @@
+name: Build and Publish
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+concurrency:
+  group: "publish-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: temurin
+          cache: gradle
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK and CMake
+        run: |
+          echo "y" | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
+            "ndk;27.0.12077973" "cmake;3.22.1"
+
+      - name: Compute version
+        id: version
+        run: |
+          VERSION=$(git describe --tags --dirty 2>/dev/null || echo "dev-snapshot")
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Building version: $VERSION"
+
+      - name: Build and publish to GitHub Packages
+        run: |
+          env VERSION="${{ steps.version.outputs.VERSION }}" \
+            ./gradlew publish
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload AAR artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: libbchat-util-android-${{ steps.version.outputs.VERSION }}
+          path: library/build/outputs/aar/*.aar
+          retention-days: 30
