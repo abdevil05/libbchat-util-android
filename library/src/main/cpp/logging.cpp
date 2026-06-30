@@ -11,7 +11,7 @@ using namespace jni_utils;
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_util_Logger_00024Companion_addLogger(JNIEnv *env, jclass clazz,
+Java_org_bchatfoundation_libbchat_1util_util_Logger_00024Companion_addLogger(JNIEnv *env, jclass clazz,
                                                                    jobject logger) {
     JavaVM *vm = nullptr;
     env->GetJavaVM(&vm);

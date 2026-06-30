@@ -16,6 +16,7 @@ val protobufVersion = "4.34.0"
 android {
     namespace = "org.bchatfoundation.libbchat_util"
     compileSdk = 36
+    ndkVersion = "27.0.12077973"
 
     defaultConfig {
         minSdk = 26
@@ -32,6 +33,7 @@ android {
                     "-DSUBMODULE_CHECK=OFF",
                 )
                 targets("bchat_util")
+                abiFilters += listOf("arm64-v8a", "armeabi-v7a")
             }
         }
     }

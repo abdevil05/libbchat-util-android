@@ -1,6 +1,6 @@
 syntax = "proto2";
 
-package signalservice;
+package bchat;
 
 option java_package = "org.bchat.libsignal.protos";
 option java_outer_classname = "UtilProtos";

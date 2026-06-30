@@ -48,8 +48,8 @@ namespace util {
 
     JavaLocalRef<jobject> serialize_user_pic(JNIEnv *env, bchat::config::profile_pic pic) {
         static BasicJavaClassInfo class_info(
-                env, "network/loki/messenger/libbchat_util/util/UserPic",
-                "(Ljava/lang/String;Lnetwork/loki/messenger/libbchat_util/util/Bytes;)V"
+                env, "org/bchatfoundation/libbchat_util/util/UserPic",
+                "(Ljava/lang/String;Lorg/bchatfoundation/libbchat_util/util/Bytes;)V"
                 );
 
         return {env, env->NewObject(class_info.java_class, class_info.constructor,
@@ -81,19 +81,19 @@ namespace util {
 
     JavaLocalRef<jobject> serialize_expiry(JNIEnv *env, const bchat::config::expiration_mode& mode, const std::chrono::seconds& time_seconds) {
         if (mode == bchat::config::expiration_mode::none) {
-            auto none = JavaLocalRef(env, env->FindClass("network/loki/messenger/libbchat_util/util/ExpiryMode$NONE"));
-            jfieldID none_instance = env->GetStaticFieldID(none.get(), "INSTANCE", "Lnetwork/loki/messenger/libbchat_util/util/ExpiryMode$NONE;");
+            auto none = JavaLocalRef(env, env->FindClass("org/bchatfoundation/libbchat_util/util/ExpiryMode$NONE"));
+            jfieldID none_instance = env->GetStaticFieldID(none.get(), "INSTANCE", "Lorg/bchatfoundation/libbchat_util/util/ExpiryMode$NONE;");
 
             return {env, env->GetStaticObjectField(none.get(), none_instance)};
         } else if (mode == bchat::config::expiration_mode::after_send) {
             static BasicJavaClassInfo class_info(
-                    env, "network/loki/messenger/libbchat_util/util/ExpiryMode$AfterSend",
+                    env, "org/bchatfoundation/libbchat_util/util/ExpiryMode$AfterSend",
                     "(J)V"
             );
             return {env, env->NewObject(class_info.java_class, class_info.constructor, time_seconds.count())};
         } else if (mode == bchat::config::expiration_mode::after_read) {
             static BasicJavaClassInfo class_info(
-                    env, "network/loki/messenger/libbchat_util/util/ExpiryMode$AfterRead",
+                    env, "org/bchatfoundation/libbchat_util/util/ExpiryMode$AfterRead",
                     "(J)V"
             );
             return {env, env->NewObject(class_info.java_class, class_info.constructor, time_seconds.count())};
@@ -102,9 +102,9 @@ namespace util {
     }
 
     std::pair<bchat::config::expiration_mode, long> deserialize_expiry(JNIEnv *env, jobject expiry_mode) {
-        auto parent = JavaLocalRef(env, env->FindClass("network/loki/messenger/libbchat_util/util/ExpiryMode"));
-        auto after_read = JavaLocalRef(env, env->FindClass("network/loki/messenger/libbchat_util/util/ExpiryMode$AfterRead"));
-        auto after_send = JavaLocalRef(env, env->FindClass("network/loki/messenger/libbchat_util/util/ExpiryMode$AfterSend"));
+        auto parent = JavaLocalRef(env, env->FindClass("org/bchatfoundation/libbchat_util/util/ExpiryMode"));
+        auto after_read = JavaLocalRef(env, env->FindClass("org/bchatfoundation/libbchat_util/util/ExpiryMode$AfterRead"));
+        auto after_send = JavaLocalRef(env, env->FindClass("org/bchatfoundation/libbchat_util/util/ExpiryMode$AfterSend"));
         jfieldID duration_seconds = env->GetFieldID(parent.get(), "expirySeconds", "J");
 
         auto object_class = JavaLocalRef(env, env->GetObjectClass(expiry_mode));
@@ -136,7 +136,7 @@ namespace util {
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_util_MultiEncrypt_encryptForMultipleSimple(
+Java_org_bchatfoundation_libbchat_1util_util_MultiEncrypt_encryptForMultipleSimple(
         JNIEnv *env, jobject thiz, jobjectArray messages, jobjectArray recipients,
         jbyteArray ed25519_secret_key, jstring domain) {
     // messages and recipients have to be the same size
@@ -178,30 +178,32 @@ Java_network_loki_messenger_libbchat_1util_util_MultiEncrypt_encryptForMultipleS
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_util_MultiEncrypt_decryptForMultipleSimple(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_util_MultiEncrypt_decryptForMultipleSimple(JNIEnv *env,
                                                                                         jobject thiz,
                                                                                         jbyteArray encoded,
                                                                                         jbyteArray secret_key,
                                                                                         jbyteArray sender_pub_key,
                                                                                         jstring domain) {
-    auto result = bchat::decrypt_for_multiple_simple(
-            JavaByteArrayRef(env, encoded).get(),
-            JavaByteArrayRef(env, secret_key).get(),
-            JavaByteArrayRef(env, sender_pub_key).get(),
-            JavaStringRef(env, domain).view()
-            );
+    return run_catching_cxx_exception_or_throws<jbyteArray>(env, [=] {
+        auto result = bchat::decrypt_for_multiple_simple(
+                JavaByteArrayRef(env, encoded).get(),
+                JavaByteArrayRef(env, secret_key).get(),
+                JavaByteArrayRef(env, sender_pub_key).get(),
+                JavaStringRef(env, domain).view()
+                );
 
-    if (result) {
-        return util::bytes_from_vector(env, *result).release();
-    } else {
-        LOGD("no result from decrypt");
-    }
-    return nullptr;
+        if (result) {
+            return util::bytes_from_vector(env, *result).release();
+        } else {
+            LOGD("no result from decrypt");
+        }
+        return (jbyteArray) nullptr;
+    });
 }
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_util_BaseCommunityInfo_00024Companion_parseFullUrl(
+Java_org_bchatfoundation_libbchat_1util_util_BaseCommunityInfo_00024Companion_parseFullUrl(
         JNIEnv *env, jobject thiz, jstring full_url) {
     return run_catching_cxx_exception_or_throws<jobject>(env, [=] {
         auto [base, room, pk] = bchat::config::community::parse_full_url(JavaStringRef(env, full_url).view());
@@ -220,7 +222,7 @@ Java_network_loki_messenger_libbchat_1util_util_BaseCommunityInfo_00024Companion
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_network_loki_messenger_libbchat_1util_util_BaseCommunityInfo_fullUrl(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_util_BaseCommunityInfo_fullUrl(JNIEnv *env,
                                                                             jobject thiz) {
     return run_catching_cxx_exception_or_throws<jstring>(env, [=] {
         auto deserialized = deserialize_base_community(env, thiz);
@@ -231,71 +233,71 @@ Java_network_loki_messenger_libbchat_1util_util_BaseCommunityInfo_fullUrl(JNIEnv
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libbchat_1util_Namespace_DEFAULT(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_Namespace_DEFAULT(JNIEnv *env, jobject thiz) {
     return 0;
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libbchat_1util_Namespace_USER_1PROFILE(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_Namespace_USER_1PROFILE(JNIEnv *env, jobject thiz) {
     return (int) bchat::config::Namespace::UserProfile;
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libbchat_1util_Namespace_CONTACTS(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_Namespace_CONTACTS(JNIEnv *env, jobject thiz) {
     return (int) bchat::config::Namespace::Contacts;
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libbchat_1util_Namespace_CONVO_1INFO_1VOLATILE(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_Namespace_CONVO_1INFO_1VOLATILE(JNIEnv *env, jobject thiz) {
     return (int) bchat::config::Namespace::ConvoInfoVolatile;
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libbchat_1util_Namespace_USER_1GROUPS(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_Namespace_USER_1GROUPS(JNIEnv *env, jobject thiz) {
     return (int) bchat::config::Namespace::UserGroups;
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libbchat_1util_Namespace_GROUP_1INFO(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_Namespace_GROUP_1INFO(JNIEnv *env, jobject thiz) {
     return (int) bchat::config::Namespace::GroupInfo;
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libbchat_1util_Namespace_GROUP_1MEMBERS(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_Namespace_GROUP_1MEMBERS(JNIEnv *env, jobject thiz) {
     return (int) bchat::config::Namespace::GroupMembers;
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libbchat_1util_Namespace_GROUP_1KEYS(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_Namespace_GROUP_1KEYS(JNIEnv *env, jobject thiz) {
     return (int) bchat::config::Namespace::GroupKeys;
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libbchat_1util_Namespace_GROUP_1MESSAGES(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_Namespace_GROUP_1MESSAGES(JNIEnv *env, jobject thiz) {
     return  (int) bchat::config::Namespace::GroupMessages;
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libbchat_1util_Namespace_REVOKED_1GROUP_1MESSAGES(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_Namespace_REVOKED_1GROUP_1MESSAGES(JNIEnv *env, jobject thiz) {
     return -11; // we don't have revoked namespace in user configs
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_Config_free(JNIEnv *env, jobject thiz) {
-    jclass baseClass = env->FindClass("network/loki/messenger/libbchat_util/Config");
+Java_org_bchatfoundation_libbchat_1util_Config_free(JNIEnv *env, jobject thiz) {
+    jclass baseClass = env->FindClass("org/bchatfoundation/libbchat_util/Config");
     jfieldID pointerField = env->GetFieldID(baseClass, "pointer", "J");
-    jclass sig = env->FindClass("network/loki/messenger/libbchat_util/ConfigSig");
-    jclass base = env->FindClass("network/loki/messenger/libbchat_util/ConfigBase");
+    jclass sig = env->FindClass("org/bchatfoundation/libbchat_util/ConfigSig");
+    jclass base = env->FindClass("org/bchatfoundation/libbchat_util/ConfigBase");
     jclass ours = env->GetObjectClass(thiz);
     if (env->IsSameObject(sig, ours)) {
         // config sig object
@@ -309,7 +311,7 @@ Java_network_loki_messenger_libbchat_1util_Config_free(JNIEnv *env, jobject thiz
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libbchat_1util_util_Util_lengthForCodepoints(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_util_Util_lengthForCodepoints(JNIEnv *env,
                                                                            jobject thiz,
                                                                            jstring str,
                                                                            jint max_codepoints) {
@@ -324,7 +326,7 @@ Java_network_loki_messenger_libbchat_1util_util_Util_lengthForCodepoints(JNIEnv 
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libbchat_1util_util_Util_countCodepoints(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_util_Util_countCodepoints(JNIEnv *env, jobject thiz,
                                                                        jstring str) {
     JavaCharsRef str_ref(env, str);
     return bchat::utf16_count({reinterpret_cast<const char16_t*>(str_ref.chars()), str_ref.size()});

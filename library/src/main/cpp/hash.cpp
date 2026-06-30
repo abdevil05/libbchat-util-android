@@ -4,7 +4,7 @@
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_Hash_hash(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_Hash_hash(JNIEnv *env, jobject thiz,
                                                        jbyteArray message,
                                                        jbyteArray hashOut,
                                                        jbyteArray key) {

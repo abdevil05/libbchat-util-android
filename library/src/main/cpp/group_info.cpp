@@ -12,7 +12,7 @@ inline auto ptrToInfo(JNIEnv* env, jobject obj) {
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_00024Companion_newInstance(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupInfoConfig_00024Companion_newInstance(JNIEnv *env,
                                                                                         jobject thiz,
                                                                                         jbyteArray pub_key,
                                                                                         jbyteArray secret_key,
@@ -35,7 +35,7 @@ Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_00024Companion_newIns
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_destroyGroup(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupInfoConfig_destroyGroup(JNIEnv *env,
                                                                           jobject thiz) {
     jni_utils::run_catching_cxx_exception_or_throws<void>(env, [=] {
         auto group_info = ptrToInfo(env, thiz);
@@ -46,20 +46,20 @@ Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_destroyGroup(JNIEnv *
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_getCreated(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_GroupInfoConfig_getCreated(JNIEnv *env, jobject thiz) {
     auto group_info = ptrToInfo(env, thiz);
     return util::jlongFromOptional(env, group_info->get_created()).release();
 }
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_getDeleteAttachmentsBefore(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupInfoConfig_getDeleteAttachmentsBefore(JNIEnv *env,
                                                                                         jobject thiz) {
     auto group_info = ptrToInfo(env, thiz);
     return util::jlongFromOptional(env, group_info->get_delete_attach_before()).release();
 }
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_getDeleteBefore(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupInfoConfig_getDeleteBefore(JNIEnv *env,
                                                                              jobject thiz) {
     auto group_info = ptrToInfo(env, thiz);
     return util::jlongFromOptional(env, group_info->get_delete_before()).release();
@@ -67,7 +67,7 @@ Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_getDeleteBefore(JNIEn
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_getExpiryTimer(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupInfoConfig_getExpiryTimer(JNIEnv *env,
                                                                             jobject thiz) {
     auto group_info = ptrToInfo(env, thiz);
     auto timer = group_info->get_expiry_timer();
@@ -80,14 +80,14 @@ Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_getExpiryTimer(JNIEnv
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_getName(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_GroupInfoConfig_getName(JNIEnv *env, jobject thiz) {
     auto group_info = ptrToInfo(env, thiz);
     return jni_utils::jstring_from_optional(env, group_info->get_name()).release();
 }
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_getProfilePic(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupInfoConfig_getProfilePic(JNIEnv *env,
                                                                            jobject thiz) {
     auto group_info = ptrToInfo(env, thiz);
     return util::serialize_user_pic(env, group_info->get_profile_pic()).release();
@@ -95,7 +95,7 @@ Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_getProfilePic(JNIEnv 
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_isDestroyed(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupInfoConfig_isDestroyed(JNIEnv *env,
                                                                          jobject thiz) {
     auto group_info = ptrToInfo(env, thiz);
     return group_info->is_destroyed();
@@ -103,7 +103,7 @@ Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_isDestroyed(JNIEnv *e
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_setCreated(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_GroupInfoConfig_setCreated(JNIEnv *env, jobject thiz,
                                                                         jlong created_at) {
     jni_utils::run_catching_cxx_exception_or_throws<void>(env, [=] {
         auto group_info = ptrToInfo(env, thiz);
@@ -113,7 +113,7 @@ Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_setCreated(JNIEnv *en
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_setDeleteAttachmentsBefore(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupInfoConfig_setDeleteAttachmentsBefore(JNIEnv *env,
                                                                                         jobject thiz,
                                                                                         jlong delete_before) {
     jni_utils::run_catching_cxx_exception_or_throws<void>(env, [=] {
@@ -124,7 +124,7 @@ Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_setDeleteAttachmentsB
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_setDeleteBefore(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupInfoConfig_setDeleteBefore(JNIEnv *env,
                                                                              jobject thiz,
                                                                              jlong delete_before) {
     jni_utils::run_catching_cxx_exception_or_throws<void>(env, [=] {
@@ -135,7 +135,7 @@ Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_setDeleteBefore(JNIEn
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_setExpiryTimer(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupInfoConfig_setExpiryTimer(JNIEnv *env,
                                                                             jobject thiz,
                                                                             jlong  expire_seconds) {
     jni_utils::run_catching_cxx_exception_or_throws<void>(env, [=] {
@@ -146,7 +146,7 @@ Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_setExpiryTimer(JNIEnv
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_setName(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_GroupInfoConfig_setName(JNIEnv *env, jobject thiz,
                                                                      jstring new_name) {
     jni_utils::run_catching_cxx_exception_or_throws<void>(env, [=] {
         auto group_info = ptrToInfo(env, thiz);
@@ -156,7 +156,7 @@ Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_setName(JNIEnv *env, 
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_setProfilePic(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupInfoConfig_setProfilePic(JNIEnv *env,
                                                                            jobject thiz,
                                                                            jobject new_profile_pic) {
     jni_utils::run_catching_cxx_exception_or_throws<void>(env, [=] {
@@ -167,7 +167,7 @@ Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_setProfilePic(JNIEnv 
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_storageNamespace(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupInfoConfig_storageNamespace(JNIEnv *env,
                                                                               jobject thiz) {
     auto group_info = ptrToInfo(env, thiz);
     return static_cast<jlong>(group_info->storage_namespace());
@@ -175,14 +175,14 @@ Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_storageNamespace(JNIE
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_id(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_GroupInfoConfig_id(JNIEnv *env, jobject thiz) {
     auto group_info = ptrToInfo(env, thiz);
     return jni_utils::jstring_from_optional(env, group_info->id).release();
 }
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_getDescription(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupInfoConfig_getDescription(JNIEnv *env,
                                                                             jobject thiz) {
     auto group_info = ptrToInfo(env, thiz);
     auto description = group_info->get_description();
@@ -194,7 +194,7 @@ Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_getDescription(JNIEnv
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupInfoConfig_setDescription(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupInfoConfig_setDescription(JNIEnv *env,
                                                                             jobject thiz,
                                                                             jstring new_description) {
     jni_utils::run_catching_cxx_exception_or_throws<void>(env, [=] {

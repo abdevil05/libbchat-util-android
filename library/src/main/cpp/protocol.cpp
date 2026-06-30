@@ -11,8 +11,8 @@ using namespace jni_utils;
 static JavaLocalRef<jobject> serializeDecodedPro(JNIEnv *env, const bchat::DecodedPro &pro) {
     static BasicJavaClassInfo class_info(
             env,
-            "network/loki/messenger/libbchat_util/protocol/DecodedPro",
-            "(ILnetwork/loki/messenger/libbchat_util/pro/ProProof;JJ)V"
+            "org/bchatfoundation/libbchat_util/protocol/DecodedPro",
+            "(ILorg/bchatfoundation/libbchat_util/pro/ProProof;JJ)V"
     );
 
     return {env, env->NewObject(class_info.java_class, class_info.constructor,
@@ -26,7 +26,7 @@ static JavaLocalRef<jobject> serializeDecodedPro(JNIEnv *env, const bchat::Decod
 static JavaLocalRef<jobject> serializeEnvelop(JNIEnv *env, const bchat::Envelope &envelope) {
     static BasicJavaClassInfo class_info(
             env,
-            "network/loki/messenger/libbchat_util/protocol/Envelope",
+            "org/bchatfoundation/libbchat_util/protocol/Envelope",
             "(J[BJ[B)V");
 
     return {env, env->NewObject(class_info.java_class,
@@ -44,8 +44,8 @@ static JavaLocalRef<jobject> serializeEnvelop(JNIEnv *env, const bchat::Envelope
 static JavaLocalRef<jobject> serializeDecodedEnvelope(JNIEnv *env, const bchat::DecodedEnvelope &envelop) {
     static BasicJavaClassInfo class_info(
             env,
-            "network/loki/messenger/libbchat_util/protocol/DecodedEnvelope",
-            "(Lnetwork/loki/messenger/libbchat_util/protocol/Envelope;Lnetwork/loki/messenger/libbchat_util/protocol/DecodedPro;[B[B[BJ)V"
+            "org/bchatfoundation/libbchat_util/protocol/DecodedEnvelope",
+            "(Lorg/bchatfoundation/libbchat_util/protocol/Envelope;Lorg/bchatfoundation/libbchat_util/protocol/DecodedPro;[B[B[BJ)V"
     );
 
     JavaLocalRef sender_ed25519 = util::bytes_from_span(env, envelop.sender_ed25519_pubkey);
@@ -64,7 +64,7 @@ static JavaLocalRef<jobject> serializeDecodedEnvelope(JNIEnv *env, const bchat::
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_encodeFor1o1(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_protocol_BChatProtocol_encodeFor1o1(JNIEnv *env,
                                                                                    jobject thiz,
                                                                                    jbyteArray plaintext,
                                                                                    jbyteArray my_ed25519_priv_key,
@@ -88,7 +88,7 @@ Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_encodeFor1o1(J
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_encodeForCommunityInbox(
+Java_org_bchatfoundation_libbchat_1util_protocol_BChatProtocol_encodeForCommunityInbox(
         JNIEnv *env, jobject thiz, jbyteArray plaintext, jbyteArray my_ed25519_priv_key,
         jlong timestamp_ms, jbyteArray recipient_pub_key, jbyteArray community_server_pub_key,
         jbyteArray rotating_key) {
@@ -110,7 +110,7 @@ Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_encodeForCommu
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_encodeForGroup(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_protocol_BChatProtocol_encodeForGroup(JNIEnv *env,
                                                                                      jobject thiz,
                                                                                      jbyteArray plaintext,
                                                                                      jbyteArray my_ed25519_priv_key,
@@ -141,7 +141,7 @@ Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_encodeForGroup
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_decodeForCommunity(
+Java_org_bchatfoundation_libbchat_1util_protocol_BChatProtocol_decodeForCommunity(
         JNIEnv *env, jobject thiz, jbyteArray payload, jlong timestamp_ms,
         jbyteArray pro_backend_pub_key) {
     return run_catching_cxx_exception_or_throws<jobject>(env, [=] {
@@ -156,8 +156,8 @@ Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_decodeForCommu
 
         static BasicJavaClassInfo class_info(
                 env,
-                "network/loki/messenger/libbchat_util/protocol/DecodedCommunityMessage",
-                "(Lnetwork/loki/messenger/libbchat_util/protocol/DecodedPro;[B)V"
+                "org/bchatfoundation/libbchat_util/protocol/DecodedCommunityMessage",
+                "(Lorg/bchatfoundation/libbchat_util/protocol/DecodedPro;[B)V"
         );
 
         return env->NewObject(
@@ -171,7 +171,7 @@ Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_decodeForCommu
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_encodeForCommunity(
+Java_org_bchatfoundation_libbchat_1util_protocol_BChatProtocol_encodeForCommunity(
         JNIEnv *env,
         jobject thiz,
         jbyteArray plaintext,
@@ -190,7 +190,7 @@ Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_encodeForCommu
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_decodeFor1o1(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_protocol_BChatProtocol_decodeFor1o1(JNIEnv *env,
                                                                                    jobject thiz,
                                                                                    jbyteArray key,
                                                                                    jbyteArray payload,
@@ -215,7 +215,7 @@ Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_decodeFor1o1(J
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_protocol_BChatProtocol_decodeForGroup(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_protocol_BChatProtocol_decodeForGroup(JNIEnv *env,
                                                                                      jobject thiz,
                                                                                      jbyteArray payload,
                                                                                      jbyteArray my_ed25519_priv_key,

@@ -10,7 +10,7 @@ inline auto ptrToProfile(JNIEnv* env, jobject obj) {
 
 extern "C" {
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_setName(
+Java_org_bchatfoundation_libbchat_1util_UserProfile_setName(
         JNIEnv *env,
         jobject thiz,
         jstring newName) {
@@ -19,7 +19,7 @@ Java_network_loki_messenger_libbchat_1util_UserProfile_setName(
 }
 
 JNIEXPORT jstring JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_getName(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_UserProfile_getName(JNIEnv *env, jobject thiz) {
     auto profile = ptrToProfile(env, thiz);
     auto name = profile->get_name();
     if (name == std::nullopt) return nullptr;
@@ -27,14 +27,14 @@ Java_network_loki_messenger_libbchat_1util_UserProfile_getName(JNIEnv *env, jobj
 }
 
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_getPic(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_UserProfile_getPic(JNIEnv *env, jobject thiz) {
     auto profile = ptrToProfile(env, thiz);
     auto pic = profile->get_profile_pic();
     return util::serialize_user_pic(env, pic).release();
 }
 
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_setPic(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_UserProfile_setPic(JNIEnv *env, jobject thiz,
                                                                 jobject user_pic) {
     ptrToProfile(env, thiz)->set_profile_pic(util::deserialize_user_pic(env, user_pic));
 }
@@ -42,21 +42,21 @@ Java_network_loki_messenger_libbchat_1util_UserProfile_setPic(JNIEnv *env, jobje
 }
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_setNtsPriority(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_UserProfile_setNtsPriority(JNIEnv *env, jobject thiz,
                                                                         jlong priority) {
     auto profile = ptrToProfile(env, thiz);
     profile->set_nts_priority(priority);
 }
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_getNtsPriority(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_UserProfile_getNtsPriority(JNIEnv *env, jobject thiz) {
     auto profile = ptrToProfile(env, thiz);
     return profile->get_nts_priority();
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_setNtsExpiry(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_UserProfile_setNtsExpiry(JNIEnv *env, jobject thiz,
                                                                       jobject expiry_mode) {
     auto profile = ptrToProfile(env, thiz);
     auto expiry = util::deserialize_expiry(env, expiry_mode);
@@ -65,7 +65,7 @@ Java_network_loki_messenger_libbchat_1util_UserProfile_setNtsExpiry(JNIEnv *env,
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_getNtsExpiry(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_UserProfile_getNtsExpiry(JNIEnv *env, jobject thiz) {
     auto profile = ptrToProfile(env, thiz);
     auto nts_expiry = profile->get_nts_expiry();
     if (nts_expiry == std::nullopt) {
@@ -80,7 +80,7 @@ Java_network_loki_messenger_libbchat_1util_UserProfile_getNtsExpiry(JNIEnv *env,
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_getCommunityMessageRequests(
+Java_org_bchatfoundation_libbchat_1util_UserProfile_getCommunityMessageRequests(
         JNIEnv *env, jobject thiz) {
     auto profile = ptrToProfile(env, thiz);
     auto blinded_msg_requests = profile->get_blinded_msgreqs();
@@ -92,7 +92,7 @@ Java_network_loki_messenger_libbchat_1util_UserProfile_getCommunityMessageReques
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_setCommunityMessageRequests(
+Java_org_bchatfoundation_libbchat_1util_UserProfile_setCommunityMessageRequests(
         JNIEnv *env, jobject thiz, jboolean blocks) {
     auto profile = ptrToProfile(env, thiz);
     profile->set_blinded_msgreqs(std::optional{(bool) blocks});
@@ -100,7 +100,7 @@ Java_network_loki_messenger_libbchat_1util_UserProfile_setCommunityMessageReques
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_isBlockCommunityMessageRequestsSet(
+Java_org_bchatfoundation_libbchat_1util_UserProfile_isBlockCommunityMessageRequestsSet(
         JNIEnv *env, jobject thiz) {
     auto profile = ptrToProfile(env, thiz);
     return profile->get_blinded_msgreqs().has_value();
@@ -108,28 +108,28 @@ Java_network_loki_messenger_libbchat_1util_UserProfile_isBlockCommunityMessageRe
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_getProfileUpdatedSeconds(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_UserProfile_getProfileUpdatedSeconds(JNIEnv *env,
                                                                                   jobject thiz) {
     return ptrToProfile(env, thiz)->get_profile_updated().time_since_epoch().count();
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_setReuploadedPic(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_UserProfile_setReuploadedPic(JNIEnv *env, jobject thiz,
                                                                           jobject user_pic) {
     ptrToProfile(env, thiz)->set_reupload_profile_pic(util::deserialize_user_pic(env, user_pic));
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_removeProConfig(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_UserProfile_removeProConfig(JNIEnv *env,
                                                                          jobject thiz) {
     ptrToProfile(env, thiz)->remove_pro_config();
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_setProConfig(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_UserProfile_setProConfig(JNIEnv *env, jobject thiz,
                                                                       jobject proof,
                                                                       jbyteArray rotating_private_key) {
     jni_utils::run_catching_cxx_exception_or_throws<void>(env, [=]() {
@@ -150,14 +150,14 @@ Java_network_loki_messenger_libbchat_1util_UserProfile_setProConfig(JNIEnv *env,
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_setProBadge(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_UserProfile_setProBadge(JNIEnv *env, jobject thiz,
                                                                      jboolean pro_badge) {
     ptrToProfile(env, thiz)->set_pro_badge(pro_badge);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_setAnimatedAvatar(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_UserProfile_setAnimatedAvatar(JNIEnv *env,
                                                                            jobject thiz,
                                                                            jboolean enabled) {
     ptrToProfile(env, thiz)->set_animated_avatar(enabled);
@@ -165,7 +165,7 @@ Java_network_loki_messenger_libbchat_1util_UserProfile_setAnimatedAvatar(JNIEnv 
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_setProAccessExpiryMs(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_UserProfile_setProAccessExpiryMs(JNIEnv *env,
                                                                               jobject thiz,
                                                                               jlong epoch_mills) {
     ptrToProfile(env, thiz)->set_pro_access_expiry(std::chrono::sys_time<std::chrono::milliseconds>{
@@ -175,21 +175,21 @@ Java_network_loki_messenger_libbchat_1util_UserProfile_setProAccessExpiryMs(JNIE
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_removeProAccessExpiry(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_UserProfile_removeProAccessExpiry(JNIEnv *env,
                                                                                jobject thiz) {
     ptrToProfile(env, thiz)->set_pro_access_expiry(std::nullopt);
 }
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_getProFeaturesRaw(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_UserProfile_getProFeaturesRaw(JNIEnv *env,
                                                                            jobject thiz) {
     return static_cast<jlong>(ptrToProfile(env, thiz)->get_profile_bitset().data);
 }
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_getProConfig(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_UserProfile_getProConfig(JNIEnv *env, jobject thiz) {
     auto profile = ptrToProfile(env, thiz)->get_pro_config();
     if (!profile) {
         return nullptr;
@@ -197,8 +197,8 @@ Java_network_loki_messenger_libbchat_1util_UserProfile_getProConfig(JNIEnv *env,
 
     static jni_utils::BasicJavaClassInfo class_info(
             env,
-            "network/loki/messenger/libbchat_util/pro/ProConfig",
-            "(Lnetwork/loki/messenger/libbchat_util/pro/ProProof;[B)V"
+            "org/bchatfoundation/libbchat_util/pro/ProConfig",
+            "(Lorg/bchatfoundation/libbchat_util/pro/ProProof;[B)V"
     );
 
     return env->NewObject(class_info.java_class,
@@ -210,7 +210,7 @@ Java_network_loki_messenger_libbchat_1util_UserProfile_getProConfig(JNIEnv *env,
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_network_loki_messenger_libbchat_1util_UserProfile_getProAccessExpiryMsOrZero(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_UserProfile_getProAccessExpiryMsOrZero(JNIEnv *env,
                                                                                     jobject thiz) {
     auto expiry = ptrToProfile(env, thiz)->get_pro_access_expiry();
     return expiry ? expiry->time_since_epoch().count() : 0;

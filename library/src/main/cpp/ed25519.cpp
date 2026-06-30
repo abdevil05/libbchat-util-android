@@ -6,7 +6,7 @@
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_ED25519_sign(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_ED25519_sign(JNIEnv *env, jobject thiz,
                                                           jbyteArray ed25519_private_key,
                                                           jbyteArray message) {
     return jni_utils::run_catching_cxx_exception_or_throws<jbyteArray>(env, [=] {
@@ -20,7 +20,7 @@ Java_network_loki_messenger_libbchat_1util_ED25519_sign(JNIEnv *env, jobject thi
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_network_loki_messenger_libbchat_1util_ED25519_verify(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_ED25519_verify(JNIEnv *env, jobject thiz,
                                                             jbyteArray ed25519_public_key,
                                                             jbyteArray message,
                                                             jbyteArray signature) {
@@ -35,7 +35,7 @@ Java_network_loki_messenger_libbchat_1util_ED25519_verify(JNIEnv *env, jobject t
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_ED25519_generate(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_ED25519_generate(JNIEnv *env, jobject thiz,
                                                               jbyteArray seed) {
     return jni_utils::run_catching_cxx_exception_or_throws<jobject>(env, [=] {
         auto [pk, sk] = seed
@@ -48,7 +48,7 @@ Java_network_loki_messenger_libbchat_1util_ED25519_generate(JNIEnv *env, jobject
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_ED25519_generateProMasterKey(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_ED25519_generateProMasterKey(JNIEnv *env, jobject thiz,
                                                                         jbyteArray ed25519_seed) {
     return jni_utils::run_catching_cxx_exception_or_throws<jbyteArray>(env, [=] {
         return util::bytes_from_span(
@@ -62,7 +62,7 @@ Java_network_loki_messenger_libbchat_1util_ED25519_generateProMasterKey(JNIEnv *
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_ED25519_positiveEd25519PubKeyFromCurve25519(
+Java_org_bchatfoundation_libbchat_1util_ED25519_positiveEd25519PubKeyFromCurve25519(
         JNIEnv *env, jobject thiz, jbyteArray curve25519_pub_key) {
     return jni_utils::run_catching_cxx_exception_or_throws<jbyteArray>(env, [=] {
         return util::bytes_from_span(

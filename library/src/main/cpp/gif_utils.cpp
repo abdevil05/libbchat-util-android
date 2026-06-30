@@ -18,7 +18,7 @@ using GifPtr = std::unique_ptr<T, void (*)(T *)>;
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_image_GifUtils_reencodeGif(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_image_GifUtils_reencodeGif(JNIEnv *env, jobject thiz,
                                                                         jbyteArray input,
                                                                         jlong timeout_mills,
                                                                         jint target_width,
@@ -182,7 +182,7 @@ static bool isAnimatedGif(GifFileType *gif_file) {
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_network_loki_messenger_libbchat_1util_image_GifUtils_isAnimatedGifForStream(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_image_GifUtils_isAnimatedGifForStream(JNIEnv *env, jobject thiz,
                                                                                    jobject input) {
     return jni_utils::run_catching_cxx_exception_or_throws<jboolean>(env, [=]() {
         JniInputStream input_stream(env, input);
@@ -208,7 +208,7 @@ Java_network_loki_messenger_libbchat_1util_image_GifUtils_isAnimatedGifForStream
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_network_loki_messenger_libbchat_1util_image_GifUtils_isAnimatedGifForBytes(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_image_GifUtils_isAnimatedGifForBytes(JNIEnv *env,
                                                                                   jobject thiz,
                                                                                   jbyteArray input) {
     return jni_utils::run_catching_cxx_exception_or_throws<jboolean>(env, [=]() {

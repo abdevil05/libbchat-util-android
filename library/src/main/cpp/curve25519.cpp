@@ -5,7 +5,7 @@
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_Curve25519_fromED25519(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_Curve25519_fromED25519(JNIEnv *env, jobject thiz,
                                                                     jbyteArray ed25519_public_key,
                                                                     jbyteArray ed25519_private_key) {
     return jni_utils::run_catching_cxx_exception_or_throws<jobject>(env, [=] {
@@ -19,7 +19,7 @@ Java_network_loki_messenger_libbchat_1util_Curve25519_fromED25519(JNIEnv *env, j
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_Curve25519_pubKeyFromED25519(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_Curve25519_pubKeyFromED25519(JNIEnv *env, jobject thiz,
                                                                           jbyteArray ed25519_public_key) {
     return jni_utils::run_catching_cxx_exception_or_throws<jbyteArray>(env, [=] {
         auto pk = bchat::curve25519::to_curve25519_pubkey(jni_utils::JavaByteArrayRef(env, ed25519_public_key).get());
@@ -29,7 +29,7 @@ Java_network_loki_messenger_libbchat_1util_Curve25519_pubKeyFromED25519(JNIEnv *
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_Curve25519_generateKeyPair(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_Curve25519_generateKeyPair(JNIEnv *env, jobject thiz) {
     return jni_utils::run_catching_cxx_exception_or_throws<jobject>(env, [=] {
         auto [sk, pk] = bchat::curve25519::curve25519_key_pair();
         return jni_utils::new_key_pair(env,

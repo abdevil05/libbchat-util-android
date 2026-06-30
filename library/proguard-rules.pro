@@ -5,7 +5,7 @@
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
--keep class network.loki.messenger.libbchat_util.** { *; }
--keepnames class network.loki.messenger.libbchat_util.** { *; }
+-keep class org.bchatfoundation.libbchat_util.** { *; }
+-keepnames class org.bchatfoundation.libbchat_util.** { *; }
 -keep class kotlin.Pair { *; }
 -keep class kotlin.Triple { *; }

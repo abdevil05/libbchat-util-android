@@ -7,15 +7,15 @@
 using namespace jni_utils;
 
 static bchat::config::Contacts *ptrToContacts(JNIEnv *env, jobject obj) {
-    auto contactsClass = JavaLocalRef(env, env->FindClass("network/loki/messenger/libbchat_util/Contacts"));
+    auto contactsClass = JavaLocalRef(env, env->FindClass("org/bchatfoundation/libbchat_util/Contacts"));
     jfieldID pointerField = env->GetFieldID(contactsClass.get(), "pointer", "J");
     return (bchat::config::Contacts *) env->GetLongField(obj, pointerField);
 }
 
 static JavaLocalRef<jobject> serialize_contact(JNIEnv *env, const bchat::config::contact_info &info) {
     static BasicJavaClassInfo class_info(
-            env, "network/loki/messenger/libbchat_util/util/Contact",
-            "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZZLnetwork/loki/messenger/libbchat_util/util/UserPic;JJJLnetwork/loki/messenger/libbchat_util/util/ExpiryMode;J)V");
+            env, "org/bchatfoundation/libbchat_util/util/Contact",
+            "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZZLorg/bchatfoundation/libbchat_util/util/UserPic;JJJLorg/bchatfoundation/libbchat_util/util/ExpiryMode;J)V");
 
     jobject returnObj = env->NewObject(class_info.java_class,
                                        class_info.constructor,
@@ -56,9 +56,9 @@ bchat::config::contact_info deserialize_contact(JNIEnv *env, jobject info, bchat
             get_approved(env->GetMethodID(java_class, "getApproved", "()Z")),
             get_approved_me(env->GetMethodID(java_class, "getApprovedMe", "()Z")),
             get_blocked(env->GetMethodID(java_class, "getBlocked", "()Z")),
-            get_user_pic(env->GetMethodID(java_class, "getProfilePicture", "()Lnetwork/loki/messenger/libbchat_util/util/UserPic;")),
+            get_user_pic(env->GetMethodID(java_class, "getProfilePicture", "()Lorg/bchatfoundation/libbchat_util/util/UserPic;")),
             get_priority(env->GetMethodID(java_class, "getPriority", "()J")),
-            get_expiry(env->GetMethodID(java_class, "getExpiryMode", "()Lnetwork/loki/messenger/libbchat_util/util/ExpiryMode;")),
+            get_expiry(env->GetMethodID(java_class, "getExpiryMode", "()Lorg/bchatfoundation/libbchat_util/util/ExpiryMode;")),
             get_profile_updated(env->GetMethodID(java_class, "getProfileUpdatedEpochSeconds", "()J")),
             get_pro_features(env->GetMethodID(java_class, "getProFeaturesRaw", "()J")) {}
     };
@@ -101,7 +101,7 @@ bchat::config::contact_info deserialize_contact(JNIEnv *env, jobject info, bchat
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_Contacts_get(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_Contacts_get(JNIEnv *env, jobject thiz,
                                                           jstring account_id) {
     // If an exception is thrown, return nullptr
     return run_catching_cxx_exception_or_throws<jobject>(
@@ -117,7 +117,7 @@ Java_network_loki_messenger_libbchat_1util_Contacts_get(JNIEnv *env, jobject thi
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_Contacts_getOrConstruct(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_Contacts_getOrConstruct(JNIEnv *env, jobject thiz,
                                                                      jstring account_id) {
     return run_catching_cxx_exception_or_throws<jobject>(env, [=] {
         auto contacts = ptrToContacts(env, thiz);
@@ -128,7 +128,7 @@ Java_network_loki_messenger_libbchat_1util_Contacts_getOrConstruct(JNIEnv *env, 
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_Contacts_set(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_Contacts_set(JNIEnv *env, jobject thiz,
                                                           jobject contact) {
     run_catching_cxx_exception_or_throws<void>(env, [=] {
         auto contacts = ptrToContacts(env, thiz);
@@ -139,7 +139,7 @@ Java_network_loki_messenger_libbchat_1util_Contacts_set(JNIEnv *env, jobject thi
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_network_loki_messenger_libbchat_1util_Contacts_erase(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_Contacts_erase(JNIEnv *env, jobject thiz,
                                                             jstring account_id) {
     return run_catching_cxx_exception_or_throws<jboolean>(env, [=] {
         auto contacts = ptrToContacts(env, thiz);
@@ -150,7 +150,7 @@ Java_network_loki_messenger_libbchat_1util_Contacts_erase(JNIEnv *env, jobject t
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_Contacts_all(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_Contacts_all(JNIEnv *env, jobject thiz) {
     return run_catching_cxx_exception_or_throws<jobject>(env, [=] {
         return jlist_from_collection(env, *ptrToContacts(env, thiz), serialize_contact);
     });
@@ -160,8 +160,8 @@ Java_network_loki_messenger_libbchat_1util_Contacts_all(JNIEnv *env, jobject thi
 
 JavaLocalRef<jobject> serialize_blinded_contact(JNIEnv *env, const bchat::config::blinded_contact_info &info) {
     static BasicJavaClassInfo class_info(
-            env, "network/loki/messenger/libbchat_util/util/BlindedContact",
-            "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;JJLnetwork/loki/messenger/libbchat_util/util/UserPic;JJ)V");
+            env, "org/bchatfoundation/libbchat_util/util/BlindedContact",
+            "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;JJLorg/bchatfoundation/libbchat_util/util/UserPic;JJ)V");
 
     return {env, env->NewObject(
             class_info.java_class,
@@ -198,7 +198,7 @@ bchat::config::blinded_contact_info deserialize_blinded_contact(JNIEnv *env, job
             , name_getter(env->GetMethodID(java_class, "getName", "()Ljava/lang/String;"))
             , created_epoch_seconds_getter(env->GetMethodID(java_class, "getCreatedEpochSeconds", "()J"))
             , profile_updated_epoch_seconds_getter(env->GetMethodID(java_class, "getProfileUpdatedEpochSeconds", "()J"))
-            , profile_pic_getter(env->GetMethodID(java_class, "getProfilePic", "()Lnetwork/loki/messenger/libbchat_util/util/UserPic;"))
+            , profile_pic_getter(env->GetMethodID(java_class, "getProfilePic", "()Lorg/bchatfoundation/libbchat_util/util/UserPic;"))
             , priority_getter(env->GetMethodID(java_class, "getPriority", "()J"))
             , pro_features_getter(env->GetMethodID(java_class, "getProFeaturesRaw", "()J")) {}
     };
@@ -230,7 +230,7 @@ bchat::config::blinded_contact_info deserialize_blinded_contact(JNIEnv *env, job
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_Contacts_getOrConstructBlinded(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_Contacts_getOrConstructBlinded(JNIEnv *env,
                                                                             jobject thiz,
                                                                             jstring community_server_url,
                                                                             jstring community_server_pub_key_hex,
@@ -244,7 +244,7 @@ Java_network_loki_messenger_libbchat_1util_Contacts_getOrConstructBlinded(JNIEnv
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_Contacts_setBlinded(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_Contacts_setBlinded(JNIEnv *env, jobject thiz,
                                                                  jobject contact) {
     ptrToContacts(env, thiz)->set_blinded(
         deserialize_blinded_contact(env, contact)
@@ -253,7 +253,7 @@ Java_network_loki_messenger_libbchat_1util_Contacts_setBlinded(JNIEnv *env, jobj
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_Contacts_eraseBlinded(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_Contacts_eraseBlinded(JNIEnv *env, jobject thiz,
                                                                    jstring community_server_url,
                                                                    jstring blinded_id) {
     ptrToContacts(env, thiz)->erase_blinded(
@@ -264,7 +264,7 @@ Java_network_loki_messenger_libbchat_1util_Contacts_eraseBlinded(JNIEnv *env, jo
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_Contacts_allBlinded(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_Contacts_allBlinded(JNIEnv *env, jobject thiz) {
     return jlist_from_collection(
             env,
             ptrToContacts(env, thiz)->blinded(),
@@ -274,7 +274,7 @@ Java_network_loki_messenger_libbchat_1util_Contacts_allBlinded(JNIEnv *env, jobj
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_Contacts_getBlinded(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_Contacts_getBlinded(JNIEnv *env,
                                                                  jobject thiz,
                                                                  jstring blinded_id) {
     auto result = ptrToContacts(env, thiz)->get_blinded(JavaStringRef(env, blinded_id).view());

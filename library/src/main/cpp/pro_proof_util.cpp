@@ -53,7 +53,7 @@ bchat::ProProof java_to_cpp_proof(JNIEnv *env, jobject proof) {
 
 JavaLocalRef<jobject> cpp_to_java_proof(JNIEnv *env, const bchat::ProProof &proof) {
     static BasicJavaClassInfo class_info(env,
-            "network/loki/messenger/libbchat_util/pro/ProProof",
+            "org/bchatfoundation/libbchat_util/pro/ProProof",
             "(I[B[BJ[B)V");
 
     return {env, env->NewObject(
@@ -69,7 +69,7 @@ JavaLocalRef<jobject> cpp_to_java_proof(JNIEnv *env, const bchat::ProProof &proo
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libbchat_1util_pro_ProProof_nativeStatus(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_pro_ProProof_nativeStatus(JNIEnv *env, jobject thiz,
                                                                        jlong now_unix_ts,
                                                                        jbyteArray verify_pub_key,
                                                                        jbyteArray signed_message_data,

@@ -57,25 +57,25 @@ bchat::config::ConfigSig* ptrToConfigSig(JNIEnv* env, jobject obj) {
 
 extern "C" {
 JNIEXPORT jboolean JNICALL
-Java_network_loki_messenger_libbchat_1util_ConfigBase_dirty(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_ConfigBase_dirty(JNIEnv *env, jobject thiz) {
     auto* configBase = ptrToConfigBase(env, thiz);
     return configBase->is_dirty();
 }
 
 JNIEXPORT jboolean JNICALL
-Java_network_loki_messenger_libbchat_1util_ConfigBase_needsPush(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_ConfigBase_needsPush(JNIEnv *env, jobject thiz) {
     auto config = ptrToConfigBase(env, thiz);
     return config->needs_push();
 }
 
 JNIEXPORT jboolean JNICALL
-Java_network_loki_messenger_libbchat_1util_ConfigBase_needsDump(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_ConfigBase_needsDump(JNIEnv *env, jobject thiz) {
     auto config = ptrToConfigBase(env, thiz);
     return config->needs_dump();
 }
 
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_ConfigBase_push(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_ConfigBase_push(JNIEnv *env, jobject thiz) {
     return jni_utils::run_catching_cxx_exception_or_throws<jobject>(env, [=] {
         auto config = ptrToConfigBase(env, thiz);
         auto [seq_no, to_push, to_delete] = config->push();
@@ -88,7 +88,7 @@ Java_network_loki_messenger_libbchat_1util_ConfigBase_push(JNIEnv *env, jobject 
 
         static jni_utils::BasicJavaClassInfo class_info(
             env,
-            "network/loki/messenger/libbchat_util/util/ConfigPush",
+            "org/bchatfoundation/libbchat_util/util/ConfigPush",
             "(Ljava/util/List;JLjava/util/List;)V"
         );
 
@@ -98,27 +98,27 @@ Java_network_loki_messenger_libbchat_1util_ConfigBase_push(JNIEnv *env, jobject 
 }
 
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_ConfigBase_free(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_ConfigBase_free(JNIEnv *env, jobject thiz) {
     auto config = ptrToConfigBase(env, thiz);
     delete config;
 }
 
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_ConfigBase_dump(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_ConfigBase_dump(JNIEnv *env, jobject thiz) {
     auto config = ptrToConfigBase(env, thiz);
     auto dumped = config->dump();
     return util::bytes_from_vector(env, dumped).release();
 }
 
 JNIEXPORT jstring JNICALL
-Java_network_loki_messenger_libbchat_1util_ConfigBase_encryptionDomain(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_ConfigBase_encryptionDomain(JNIEnv *env,
                                                                          jobject thiz) {
     auto conf = ptrToConfigBase(env, thiz);
     return env->NewStringUTF(conf->encryption_domain());
 }
 
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_ConfigBase_confirmPushed(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_ConfigBase_confirmPushed(JNIEnv *env, jobject thiz,
                                                                       jlong seq_no,
                                                                       jobjectArray hash_list) {
     auto conf = ptrToConfigBase(env, thiz);
@@ -136,7 +136,7 @@ Java_network_loki_messenger_libbchat_1util_ConfigBase_confirmPushed(JNIEnv *env,
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "bugprone-reserved-identifier"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_ConfigBase_merge___3Lkotlin_Pair_2(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_ConfigBase_merge___3Lkotlin_Pair_2(JNIEnv *env, jobject thiz,
                                                                      jobjectArray to_merge) {
     return jni_utils::run_catching_cxx_exception_or_throws<jobject>(env, [=] {
         auto conf = ptrToConfigBase(env, thiz);
@@ -156,7 +156,7 @@ Java_network_loki_messenger_libbchat_1util_ConfigBase_merge___3Lkotlin_Pair_2(JN
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_ConfigBase_activeHashes(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_ConfigBase_activeHashes(JNIEnv *env, jobject thiz) {
     auto conf = ptrToConfigBase(env, thiz);
     return jni_utils::jstring_list_from_collection(env, conf->active_hashes());
 }

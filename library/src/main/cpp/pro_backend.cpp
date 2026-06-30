@@ -8,7 +8,7 @@ using namespace jni_utils;
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_network_loki_messenger_libbchat_1util_pro_BackendRequests_buildAddProPaymentRequestJson(
+Java_org_bchatfoundation_libbchat_1util_pro_BackendRequests_buildAddProPaymentRequestJson(
         JNIEnv *env, jobject thiz, jint version, jbyteArray master_private_key,
         jbyteArray rotating_private_key, jint payment_provider, jstring payment_id,
         jstring order_id) {
@@ -27,7 +27,7 @@ Java_network_loki_messenger_libbchat_1util_pro_BackendRequests_buildAddProPaymen
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_network_loki_messenger_libbchat_1util_pro_BackendRequests_buildGenerateProProofRequestJson(
+Java_org_bchatfoundation_libbchat_1util_pro_BackendRequests_buildGenerateProProofRequestJson(
         JNIEnv *env, jobject thiz, jint version, jbyteArray master_private_key,
         jbyteArray rotating_private_key, jlong now_ms) {
     return run_catching_cxx_exception_or_throws<jstring>(env, [=]() {
@@ -46,7 +46,7 @@ Java_network_loki_messenger_libbchat_1util_pro_BackendRequests_buildGenerateProP
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_network_loki_messenger_libbchat_1util_pro_BackendRequests_buildGetProDetailsRequestJson(
+Java_org_bchatfoundation_libbchat_1util_pro_BackendRequests_buildGetProDetailsRequestJson(
         JNIEnv *env, jobject thiz, jint version, jbyteArray pro_master_private_key, jlong now_ms,
         jint count) {
     return run_catching_cxx_exception_or_throws<jstring>(env, [=]() {
@@ -65,7 +65,7 @@ Java_network_loki_messenger_libbchat_1util_pro_BackendRequests_buildGetProDetail
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_pro_BackendRequests_getPaymentProviderMetadata(
+Java_org_bchatfoundation_libbchat_1util_pro_BackendRequests_getPaymentProviderMetadata(
         JNIEnv *env, jobject thiz, jint payment_provider) {
     return run_catching_cxx_exception_or_throws<jobject>(env, [=]() -> jobject {
         if (payment_provider >= BCHAT_PRO_BACKEND_PAYMENT_PROVIDER_COUNT || payment_provider < 0) {
@@ -76,7 +76,7 @@ Java_network_loki_messenger_libbchat_1util_pro_BackendRequests_getPaymentProvide
 
         static BasicJavaClassInfo class_info(
                 env,
-                "network/loki/messenger/libbchat_util/protocol/PaymentProviderMetadata",
+                "org/bchatfoundation/libbchat_util/protocol/PaymentProviderMetadata",
                 "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
 
 

@@ -10,14 +10,14 @@ inline auto ptrToKeys(JNIEnv* env, jobject obj) {
 
 extern "C"
 JNIEXPORT jint JNICALL
-        Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_00024Companion_storageNamespace(JNIEnv* env,
+        Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_00024Companion_storageNamespace(JNIEnv* env,
                                                                                                      jobject thiz) {
     return (jint)bchat::config::Namespace::GroupKeys;
 }
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_00024Companion_newInstance(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_00024Companion_newInstance(JNIEnv *env,
                                                                                         jobject thiz,
                                                                                         jbyteArray user_secret_key,
                                                                                         jbyteArray group_public_key,
@@ -57,14 +57,14 @@ Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_00024Companion_newIns
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_groupKeys(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_groupKeys(JNIEnv *env, jobject thiz) {
     auto config = ptrToKeys(env, thiz);
     return jni_utils::jlist_from_collection(env, config->group_keys(), util::bytes_from_span);
 }
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_loadKey(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_loadKey(JNIEnv *env, jobject thiz,
                                                                      jbyteArray message,
                                                                      jstring hash,
                                                                      jlong timestamp_ms,
@@ -86,14 +86,14 @@ Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_loadKey(JNIEnv *env, 
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_needsRekey(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_needsRekey(JNIEnv *env, jobject thiz) {
     auto keys = ptrToKeys(env, thiz);
     return keys->needs_rekey();
 }
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_needsDump(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_needsDump(JNIEnv *env, jobject thiz) {
     auto keys = ptrToKeys(env, thiz);
     return keys->needs_dump();
 }
@@ -102,7 +102,7 @@ Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_needsDump(JNIEnv *env
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_pendingKey(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_pendingKey(JNIEnv *env, jobject thiz) {
     auto keys = ptrToKeys(env, thiz);
     auto pending = keys->pending_key();
     if (!pending) {
@@ -113,7 +113,7 @@ Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_pendingKey(JNIEnv *en
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_pendingConfig(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_pendingConfig(JNIEnv *env,
                                                                            jobject thiz) {
     auto keys = ptrToKeys(env, thiz);
     auto pending = keys->pending_config();
@@ -125,7 +125,7 @@ Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_pendingConfig(JNIEnv 
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_rekey(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_rekey(JNIEnv *env, jobject thiz,
                                                                    jlong info_ptr, jlong members_ptr) {
     return jni_utils::run_catching_cxx_exception_or_throws<jbyteArray>(env, [=] {
         auto keys = ptrToKeys(env, thiz);
@@ -138,7 +138,7 @@ Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_rekey(JNIEnv *env, jo
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_dump(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_dump(JNIEnv *env, jobject thiz) {
     auto keys = ptrToKeys(env, thiz);
     auto dump = keys->dump();
     return util::bytes_from_vector(env, dump).release();
@@ -146,14 +146,14 @@ Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_dump(JNIEnv *env, job
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_free(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_free(JNIEnv *env, jobject thiz) {
     auto ptr = ptrToKeys(env, thiz);
     delete ptr;
 }
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_encrypt(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_encrypt(JNIEnv *env, jobject thiz,
                                                                      jbyteArray plaintext) {
     return jni_utils::run_catching_cxx_exception_or_throws<jbyteArray>(env, [=] {
         auto ptr = ptrToKeys(env, thiz);
@@ -165,7 +165,7 @@ Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_encrypt(JNIEnv *env, 
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_decrypt(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_decrypt(JNIEnv *env, jobject thiz,
                                                                      jbyteArray ciphertext) {
     return jni_utils::run_catching_cxx_exception_or_throws<jobject>(env, [=] {
         auto ptr = ptrToKeys(env, thiz);
@@ -182,14 +182,14 @@ Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_decrypt(JNIEnv *env, 
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_keys(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_keys(JNIEnv *env, jobject thiz) {
     auto ptr = ptrToKeys(env, thiz);
     return jni_utils::jlist_from_collection(env, ptr->group_keys(), util::bytes_from_span);
 }
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_groupEncKey(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_groupEncKey(JNIEnv *env, jobject thiz) {
     return jni_utils::run_catching_cxx_exception_or_throws<jbyteArray>(env, [=] {
         return util::bytes_from_span(env, ptrToKeys(env, thiz)->group_enc_key()).release();
     });
@@ -197,14 +197,14 @@ Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_groupEncKey(JNIEnv *e
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_activeHashes(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_activeHashes(JNIEnv *env,
                                                                            jobject thiz) {
     auto ptr = ptrToKeys(env, thiz);
     return jni_utils::jstring_list_from_collection(env, ptr->active_hashes());
 }
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_makeSubAccount(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_makeSubAccount(JNIEnv *env,
                                                                             jobject thiz,
                                                                             jstring bchat_id,
                                                                             jboolean can_write,
@@ -218,7 +218,7 @@ Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_makeSubAccount(JNIEnv
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_getSubAccountToken(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_getSubAccountToken(JNIEnv *env,
                                                                                 jobject thiz,
                                                                                 jstring bchat_id,
                                                                                 jboolean can_write,
@@ -233,7 +233,7 @@ Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_getSubAccountToken(JN
 
 static jni_utils::JavaLocalRef<jobject> deserialize_swarm_auth(JNIEnv *env, bchat::config::groups::Keys::swarm_auth auth) {
     static jni_utils::BasicJavaClassInfo class_info(
-            env, "network/loki/messenger/libbchat_util/GroupKeysConfig$SwarmAuth", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
+            env, "org/bchatfoundation/libbchat_util/GroupKeysConfig$SwarmAuth", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
 
     jni_utils::JavaLocalRef sub_account(env, env->NewStringUTF(auth.subaccount.data()));
     jni_utils::JavaLocalRef sub_account_sig(env, env->NewStringUTF(auth.subaccount_sig.data()));
@@ -244,7 +244,7 @@ static jni_utils::JavaLocalRef<jobject> deserialize_swarm_auth(JNIEnv *env, bcha
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_subAccountSign(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_subAccountSign(JNIEnv *env,
                                                                             jobject thiz,
                                                                             jbyteArray message,
                                                                             jbyteArray signing_value) {
@@ -259,7 +259,7 @@ Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_subAccountSign(JNIEnv
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_supplementFor(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_supplementFor(JNIEnv *env,
                                                                            jobject thiz,
                                                                            jobjectArray j_user_bchat_ids) {
     return jni_utils::run_catching_cxx_exception_or_throws<jbyteArray>(env, [=] {
@@ -279,7 +279,7 @@ Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_supplementFor(JNIEnv 
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_currentGeneration(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_currentGeneration(JNIEnv *env,
                                                                                jobject thiz) {
     auto ptr = ptrToKeys(env, thiz);
     return ptr->current_generation();
@@ -287,21 +287,21 @@ Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_currentGeneration(JNI
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_admin(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_admin(JNIEnv *env, jobject thiz) {
     auto ptr = ptrToKeys(env, thiz);
     return ptr->admin();
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_size(JNIEnv *env, jobject thiz) {
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_size(JNIEnv *env, jobject thiz) {
     auto ptr = ptrToKeys(env, thiz);
     return ptr->size();
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_network_loki_messenger_libbchat_1util_GroupKeysConfig_loadAdminKey(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_GroupKeysConfig_loadAdminKey(JNIEnv *env, jobject thiz,
                                                                           jbyteArray admin_key,
                                                                           jlong info_ptr,
                                                                           jlong members_ptr) {

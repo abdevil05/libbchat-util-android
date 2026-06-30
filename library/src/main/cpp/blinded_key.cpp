@@ -12,7 +12,7 @@
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_util_BlindKeyAPI_blindVersionKeyPair(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_util_BlindKeyAPI_blindVersionKeyPair(JNIEnv *env,
                                                                                   jobject thiz,
                                                                                   jbyteArray ed25519_secret_key) {
     return jni_utils::run_catching_cxx_exception_or_throws<jobject>(env, [=] {
@@ -22,7 +22,7 @@ Java_network_loki_messenger_libbchat_1util_util_BlindKeyAPI_blindVersionKeyPair(
 }
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_util_BlindKeyAPI_blindVersionSign(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_util_BlindKeyAPI_blindVersionSign(JNIEnv *env,
                                                                                jobject thiz,
                                                                                jbyteArray ed25519_secret_key,
                                                                                jlong timestamp) {
@@ -38,7 +38,7 @@ Java_network_loki_messenger_libbchat_1util_util_BlindKeyAPI_blindVersionSign(JNI
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_util_BlindKeyAPI_blindVersionSignRequest(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_util_BlindKeyAPI_blindVersionSignRequest(JNIEnv *env,
                                                                                       jobject thiz,
                                                                                       jbyteArray ed25519_secret_key,
                                                                                       jlong timestamp,
@@ -59,7 +59,7 @@ Java_network_loki_messenger_libbchat_1util_util_BlindKeyAPI_blindVersionSignRequ
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_util_BlindKeyAPI_blind15KeyPair(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_util_BlindKeyAPI_blind15KeyPair(JNIEnv *env,
                                                                              jobject thiz,
                                                                              jbyteArray ed25519_secret_key,
                                                                              jbyteArray server_pub_key) {
@@ -74,7 +74,7 @@ Java_network_loki_messenger_libbchat_1util_util_BlindKeyAPI_blind15KeyPair(JNIEn
 
 extern "C"
 JNIEXPORT jbyteArray JNICALL
-Java_network_loki_messenger_libbchat_1util_util_BlindKeyAPI_blind15Sign(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_util_BlindKeyAPI_blind15Sign(JNIEnv *env, jobject thiz,
                                                                           jbyteArray ed25519_secret_key,
                                                                           jstring server_pub_key,
                                                                           jbyteArray message) {
@@ -90,7 +90,7 @@ Java_network_loki_messenger_libbchat_1util_util_BlindKeyAPI_blind15Sign(JNIEnv *
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_network_loki_messenger_libbchat_1util_util_BlindKeyAPI_bchatIdMatchesBlindedId(JNIEnv *env,
+Java_org_bchatfoundation_libbchat_1util_util_BlindKeyAPI_bchatIdMatchesBlindedId(JNIEnv *env,
                                                                                         jobject thiz,
                                                                                         jstring bchat_id,
                                                                                         jstring blinded_id,
@@ -108,7 +108,7 @@ Java_network_loki_messenger_libbchat_1util_util_BlindKeyAPI_bchatIdMatchesBlinde
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_network_loki_messenger_libbchat_1util_util_BlindKeyAPI_blind15Ids(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_util_BlindKeyAPI_blind15Ids(JNIEnv *env, jobject thiz,
                                                                          jstring bchat_id,
                                                                          jstring server_pub_key) {
     return jni_utils::run_catching_cxx_exception_or_throws<jobject>(env, [=]() -> jobject {
@@ -124,7 +124,7 @@ Java_network_loki_messenger_libbchat_1util_util_BlindKeyAPI_blind15Ids(JNIEnv *e
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_network_loki_messenger_libbchat_1util_util_BlindKeyAPI_blind25Id(JNIEnv *env, jobject thiz,
+Java_org_bchatfoundation_libbchat_1util_util_BlindKeyAPI_blind25Id(JNIEnv *env, jobject thiz,
                                                                         jstring bchat_id,
                                                                         jstring server_pub_key) {
     return jni_utils::run_catching_cxx_exception_or_throws<jstring>(env, [=]() -> jstring {

@@ -9,7 +9,7 @@ namespace jni_utils {
     jobject new_key_pair(JNIEnv *env, jbyteArray pubKey, jbyteArray secKey) {
         static BasicJavaClassInfo class_info(
                 env,
-                "network/loki/messenger/libbchat_util/util/KeyPair",
+                "org/bchatfoundation/libbchat_util/util/KeyPair",
                 "([B[B)V"
         );
 

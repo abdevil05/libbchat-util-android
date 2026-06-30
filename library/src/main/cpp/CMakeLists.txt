@@ -44,7 +44,7 @@ FetchContent_MakeAvailable(webp)
 FetchContent_Declare(
         libyuv
         GIT_REPOSITORY https://chromium.googlesource.com/libyuv/libyuv
-        GIT_TAG stable
+        GIT_TAG eb6e7bb63738e29efd82ea3cf2a115238a89fa51
 )
 FetchContent_MakeAvailable(libyuv)
 
@@ -88,6 +88,7 @@ set(SOURCES
         logging.cpp
         encryption.cpp
         jni_utils.cpp
+        jni_init.cpp
         ed25519.cpp
         curve25519.cpp
         hash.cpp

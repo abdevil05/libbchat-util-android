@@ -191,7 +191,7 @@ namespace jni_utils {
     template <typename Collection>
     JavaLocalRef<jobject> bchat_bytes_from_range(JNIEnv *env, const Collection &obj) {
         static BasicJavaClassInfo bytes_class(
-                env, "network/loki/messenger/libbchat_util/util/Bytes", "([B)V");
+                env, "org/bchatfoundation/libbchat_util/util/Bytes", "([B)V");
 
         static_assert(sizeof(*obj.data()) == sizeof(jbyte));
 
